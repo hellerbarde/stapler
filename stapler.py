@@ -10,16 +10,29 @@ import re
 ###############################################
 ###### Handle all command line arguments ######
 ###############################################
+if (len(sys.argv) < 4):
+	print "too few arguments"
+	#usage()
+	sys.exit()
 outfile = ""
 mode = ""
 # Possible modes are:
 # cat   - concatenate multiple PDFs
-# burst - split a pdf into its single pages
+# split - split a pdf into single pages
 # del   - delete single pages or ranges
 # sel   - select single pages or ranges (opposite of del)
+modes = ["cat", "split", "del", "sel"]
 
 if (re.match('.*?\.pdf',sys.argv[1])):
 	print "out: "+sys.argv[1]
+	outfile = sys.argv[1]
+else:
+	print "target not specified"
+	sys.exit()
+arguments = sys.argv[2:]
+if (arguments[0] in modes):
+	print arguments[0]
+
 
 sys.exit()
 output = PdfFileWriter()
