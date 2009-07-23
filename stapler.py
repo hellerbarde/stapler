@@ -6,7 +6,7 @@
 
 from pyPdf import PdfFileWriter, PdfFileReader
 import sys
-
+import re
 ###############################################
 ###### Handle all command line arguments ######
 ###############################################
@@ -18,7 +18,10 @@ mode = ""
 # del   - delete single pages or ranges
 # sel   - select single pages or ranges (opposite of del)
 
+if (re.match('.*?\.pdf',sys.argv[1])):
+	print "out: "+sys.argv[1]
 
+sys.exit()
 output = PdfFileWriter()
 input1 = PdfFileReader(file("document1.pdf", "rb"))
 
