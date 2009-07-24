@@ -27,17 +27,18 @@ if (re.match('.*?\.pdf',sys.argv[1])):
 	print "out: "+sys.argv[1]
 	outfile = sys.argv[1]
 else:
-	print "target not specified"
+	print "no target specified"
+	#usage()
 	sys.exit()
 arguments = sys.argv[2:]
 if (arguments[0] in modes):
 	print arguments[0]
 
 
-sys.exit()
-output = PdfFileWriter()
-input1 = PdfFileReader(file("document1.pdf", "rb"))
 
+output = PdfFileWriter()
+# input1 = PdfFileReader(file("document1.pdf", "rb"))
+sys.exit()
 # print the title of document1.pdf
 print "title = %s" % (input1.getDocumentInfo().title)
 
