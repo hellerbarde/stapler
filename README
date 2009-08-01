@@ -1,0 +1,9 @@
+ Stapler
+ 
+ History
+Stapler is a pure python replacement for PDFtk, a tool for manipulating PDF documents from the command line. PDFtk was written in Java, and natively compiled with gcj. And it has been discontinued a few years ago and bitrot is setting in (i.e. it does not compile anymore in archlinux).
+Since I used it quite a lot, I decided to look for an alternative and found pypdf, a PDF library written in pure Python. I couldn't find a tool which actually uses the library, so I started writing my own.
+At some point I plan on providing a GUI, but the command line version will always exist. 
+
+
+-Philip Stark
