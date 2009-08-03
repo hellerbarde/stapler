@@ -3,10 +3,11 @@
 
 # Copyright 2009 Philip Stark
 # BSD Style Licence
-
+import math
 from pyPdf import PdfFileWriter, PdfFileReader
 import sys
 import re
+from os.path import splitext
 #####################################
 # Handle all command line arguments #
 #####################################
@@ -33,8 +34,6 @@ def parse_args(argv):
 		print "please input a valid mode"
 		print files
 		sys.exit()
-
-	print files
 
 	if (mode == "cat"):
 		cat(files)
@@ -72,11 +71,37 @@ def cat(files):
 	outputStream.close()
 ###### end cat ######
 
-def split(args):
-	pass
+def split(files):
+	inputs = []
+#	outputfilename = files[-1]
+#	output = PdfFileWriter()
+	for i in files:
+		inputs.append(PdfFileReader(file(i, "rb")))
+	i=0
+	for pdf in inputs:
+		for pagenr in range(pdf.getNumPages()):
+			output = PdfFileWriter()
+			output.addPage(pdf.getPage(pagenr))
+			(name, ext) = splitext(files[i])
+			my_str = "%0" + str(math.ceil(math.log10(pdf.getNumPages()))) + "d"
+			my_str = my_str % (pagenr+1)
+			print (name+"p"+my_str+ext)
+			outputStream = file(name+"p"+my_str+ext, "wb")
+			output.write(outputStream)
+			outputStream.close()
+			output = PdfFileWriter()
+		i=i+1
 ###### end split ######
 
 def delete(args):
+	operations = []
+	nr_of_files = 0
+	for i in args:
+		if (re.match('.*?\.pdf', i)):
+			nr_of_files = nr_of_files + 1
+			operations.append([i])
+		else:
+			operations[-1].append(i)
 	pass
 ###### end delete ######
 
