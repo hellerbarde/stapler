@@ -7,6 +7,7 @@ import math
 from pyPdf import PdfFileWriter, PdfFileReader
 import sys
 import re
+import os.path
 from os.path import splitext
 #####################################
 # Handle all command line arguments #
@@ -56,28 +57,40 @@ def parse_args(argv):
 
 ### end parse_args ###
 
+def halp():
+	print ("haaalp, something broke, but no worries, I will fix it (or not)")
+
 def cat(files):
 	inputs = []
 	outputfilename = files[-1]
 	output = PdfFileWriter()
-	for i in files[:-1]:
-		inputs.append(PdfFileReader(file(i, "rb")))
-
+	try: 
+		for i in files[:-1]:
+			inputs.append(PdfFileReader(file(i, "rb")))
+	except:
+		halp()
+		sys.exit(2) # pdf file is no pdf file...
+	i = 0
 	for pdf in inputs:
 		for pagenr in range(pdf.getNumPages()):
 			output.addPage(pdf.getPage(pagenr))
+			i=i+1
 	outputStream = file(outputfilename, "wb")
 	output.write(outputStream)
 	outputStream.close()
+	print (str(i)+" pages processed")
 ###### end cat ######
 
 def split(files):
 	inputs = []
-#	outputfilename = files[-1]
-#	output = PdfFileWriter()
-	for i in files:
-		inputs.append(PdfFileReader(file(i, "rb")))
+	try:
+		for i in files:
+			inputs.append(PdfFileReader(file(i, "rb")))
+	except:
+		halp()
+		sys.exit(2) # pdf file is no pdf file...
 	i=0
+	j=0
 	for pdf in inputs:
 		for pagenr in range(pdf.getNumPages()):
 			output = PdfFileWriter()
@@ -89,51 +102,90 @@ def split(files):
 			outputStream = file(name+"p"+my_str+ext, "wb")
 			output.write(outputStream)
 			outputStream.close()
-			output = PdfFileWriter()
+			j=j+1
 		i=i+1
+	print (str(i)+" pages processed")
 ###### end split ######
+
+def select(args):
+	operations = []
+	outputfilename = args[-1]
+	nr_of_files = 0
+	for i in args[:-1]:
+		if (re.match('.*?\.pdf', i)):
+			nr_of_files = nr_of_files + 1
+			operations.append({"name":i,"pages":[]})
+		else:
+			if (re.match('[0-9]+-[0-9]+', i)):
+				(begin,sep,end) = i.partition("-")
+				for j in range(int(begin), int(end)+1):
+					operations[-1]["pages"].append(int(j))
+			else:
+				operations[-1]["pages"].append(int(i))
+# 	print (str(operations)+"output: "+str(outputfilename))
+# 	sys.exit(0)
+	output = PdfFileWriter()
+# 	try:
+	for pdf in operations:
+		print (pdf["name"])
+		fiel = PdfFileReader(file(pdf["name"], "rb"))
+		for pagenr in pdf["pages"]:
+			if (not (pagenr > fiel.getNumPages()) and not(pagenr < 1)):
+				output.addPage(fiel.getPage(pagenr-1))
+			else:
+				halp()
+				print("one or more pages are not in the chosen PDF")
+				sys.exit(3) #wrong pages or ranges
+# 	except:
+# 		halp()
+# 		sys.exit(2) # pdf file is no pdf file...h
+	if (not os.path.exists(outputfilename)):
+		outputStream = file(outputfilename, "wb")
+		output.write(outputStream)
+		outputStream.close()
+	else:
+		print ("file exists, discontinuing operation")
+###### end select ######
 
 def delete(args):
 	operations = []
+	outputfilename = args[-1]
 	nr_of_files = 0
-	for i in args:
+	for i in args[:-1]:
 		if (re.match('.*?\.pdf', i)):
 			nr_of_files = nr_of_files + 1
-			operations.append([i])
+			operations.append({"name":i,"pages":[]})
 		else:
-			operations[-1].append(i)
-	pass
+			if (re.match('[0-9]+-[0-9]+', i)):
+				(begin,sep,end) = i.partition("-")
+				for j in range(int(begin), int(end)+1):
+					operations[-1]["pages"].append(int(j))
+			else:
+				operations[-1]["pages"].append(int(i))
+# 	print (str(operations)+"output: "+str(outputfilename))
+# 	sys.exit(0)
+	output = PdfFileWriter()
+# 	try:
+	for pdf in operations:
+		print (pdf["name"])
+		fiel = PdfFileReader(file(pdf["name"], "rb"))
+# 		for pagenr in pdf["pages"]:
+		for pagenr in range(1,fiel.getNumPages()+1):
+			if (pagenr not in pdf["pages"]):
+				output.addPage(fiel.getPage(pagenr-1))
+			else:
+				print ("skipping page nr: "+str(pagenr))
+# 	except:
+# 		halp()
+# 		sys.exit(2) # pdf file is no pdf file...h
+	if (not os.path.exists(outputfilename)):
+		outputStream = file(outputfilename, "wb")
+		output.write(outputStream)
+		outputStream.close()
+	else:
+		print ("file exists, discontinuing operation")
 ###### end delete ######
 
-def select(args):
-	pass
-###### end select ######
-# add page 1 from input1 to output document, unchanged
-# output.addPage(input1.getPage(0))
 
-# add page 2 from input1, but rotated clockwise 90 degrees
-#output.addPage(input1.getPage(1).rotateClockwise(90))
-
-# add page 3 from input1, rotated the other way:
-#output.addPage(input1.getPage(2).rotateCounterClockwise(90))
-# alt: output.addPage(input1.getPage(2).rotateClockwise(270))
-
-# add page 4 from input1, but first add a watermark from another pdf:
-#page4 = input1.getPage(3)
-#watermark = PdfFileReader(file("watermark.pdf", "rb"))
-#page4.mergePage(watermark.getPage(0))
-
-# add page 5 from input1, but crop it to half size:
-#page5 = input1.getPage(4)
-#page5.mediaBox.upperRight = (
-#    page5.mediaBox.getUpperRight_x() / 2,
-#    page5.mediaBox.getUpperRight_y() / 2
-#)
-#output.addPage(page5)
-
-# print how many pages input1 has:
-#print "document1.pdf has %s pages." % input1.getNumPages()
-
-# finally, write "output" to document-output.pdf
 parse_args(sys.argv)
 
