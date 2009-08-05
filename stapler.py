@@ -79,13 +79,14 @@ def halp():
 def cat(infilenames, outputfilename, verbose):
 	inputs = []
 	for infilename in infilenames:
+		print infilename
 		if not os.path.exists(infilename):
 			halp()
 			print ("error: "+infilename+" does not exist... exiting nao")
 			sys.exit(2) # pdf file is no pdf file...
-	if not os.path.exists(outputfilename):
+	if os.path.exists(outputfilename):
 		halp()
-		print ("error: "+infilename+" does not exist... exiting nao")
+		print ("error: "+infilename+" does already exist... exiting nao")
 		sys.exit(2) # pdf file is no pdf file...
 	try: 
 		for i in infilenames[:-1]:
@@ -148,9 +149,9 @@ def select(filesandranges, outputfilename, verbose):
 			halp()
 			print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
 			sys.exit(2) # pdf file is no pdf file...
-	if not os.path.exists(outputfilename):
+	if os.path.exists(outputfilename):
 		halp()
-		print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
+		print ("error: "+filesandranges[i]['name']+" does already exist... exiting nao")
 		sys.exit(2) # pdf file is no pdf file...
 
 	output = PdfFileWriter()
@@ -182,9 +183,9 @@ def delete(filesandranges, outputfilename, verbose):
 			halp()
 			print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
 			sys.exit(2) # pdf file is no pdf file...
-	if not os.path.exists(outputfilename):
+	if os.path.exists(outputfilename):
 		halp()
-		print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
+		print ("error: "+filesandranges[i]['name']+" does already exist... exiting nao")
 		sys.exit(2) # pdf file is no pdf file...
 
 	output = PdfFileWriter()
