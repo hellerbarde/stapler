@@ -2,13 +2,17 @@
 # -*- coding: utf-8 -*-
 
 # Copyright 2009 Philip Stark
-# BSD Style Licence
+# the license is found in the file "LICENSE"
+# if this file is missing, you can find a copy at
+# http://stuff.codechaos.ch/stapler_license
+
 import math
 from pyPdf import PdfFileWriter, PdfFileReader
 import sys
 import re
 import os.path
 from os.path import splitext
+
 #####################################
 # Handle all command line arguments #
 #####################################
@@ -104,7 +108,7 @@ def split(files):
 			outputStream.close()
 			j=j+1
 		i=i+1
-	print (str(i)+" pages processed")
+# 	print (str(j)+" pages in "+str(i)+" files processed")
 ###### end split ######
 
 def select(args):
