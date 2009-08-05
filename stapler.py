@@ -16,6 +16,7 @@ from os.path import splitext
 #####################################
 # Handle all command line arguments #
 #####################################
+
 def parse_args(argv):
 	mode = ""
 	# Possible modes are:
@@ -28,53 +29,73 @@ def parse_args(argv):
 
 	if (len(argv) < 3):
 		print "too few arguments"
-		#usage()
-		sys.exit()
-
+		halp()
+		sys.exit(0)
+	
+	if argv[1] == "-h":
+		halp()
+		sys.exit(0)
+	
 	mode = argv[1]
 	files = argv[2:]
 	if (mode in modes):
 		print "mode: "+mode
 	else:
 		print "please input a valid mode"
-		print files
+		halp()
 		sys.exit()
 
 	if (mode == "cat"):
-		cat(files)
+		cat(files[:-1],files[-1], True)
 	elif (mode == "split"):
-		split(files)
-	elif (mode == "del"):
-		delete(files)
+		split(files, True)
+	else:
+		operations = []
+		for inputname in files[:-1]:
+			if (re.match('.*?\.pdf', inputname)):
+				operations.append({"name":inputname,"pages":[]})
+			else:
+				if (re.match('[0-9]+-[0-9]+', inputname)):
+					(begin,sep,end) = inputname.partition("-")
+					for j in range(int(begin), int(end)+1):
+						operations[-1]["pages"].append(int(j))
+				else:
+					operations[-1]["pages"].append(int(inputname))
+	if (mode == "del"):
+		delete(operations, files[-1], True)
 	elif (mode == "sel"):
-		select(files)
-
-	outfile = ""
-
-#	if (re.match('.*?\.pdf', arguments[-1])):
-#		print "out: " + arguments[-1]
-#		outfile = arguments[-1]
-#	else:
-#		print "target not specified correctly (needs to end in .pdf)"
-#		sys.exit()
-
-
-### end parse_args ###
+		select(operations, files[-1], True)
+###### end function parse_args ######
 
 def halp():
-	print ("haaalp, something broke, but no worries, I will fix it (or not)")
+	print ("""Usage: stapler mode arguments [output]
+	arguments:
+		cat: input pdf files (output is needed for this mode)
+		split: input pdf files (no output needed)
+		sel: <inputfile> <pagenr>|<pagerange> ... (output needed)
+		del: <inputfile> <pagenr>|<pagerange> ... (output needed)""")
+###### end function halp ######
 
-def cat(files):
+def cat(infilenames, outputfilename, verbose):
 	inputs = []
-	outputfilename = files[-1]
-	output = PdfFileWriter()
+	for infilename in infilenames:
+		if not os.path.exists(infilename):
+			halp()
+			print ("error: "+infilename+" does not exist... exiting nao")
+			sys.exit(2) # pdf file is no pdf file...
+	if not os.path.exists(outputfilename):
+		halp()
+		print ("error: "+infilename+" does not exist... exiting nao")
+		sys.exit(2) # pdf file is no pdf file...
 	try: 
-		for i in files[:-1]:
+		for i in infilenames[:-1]:
 			inputs.append(PdfFileReader(file(i, "rb")))
 	except:
 		halp()
 		sys.exit(2) # pdf file is no pdf file...
+	
 	i = 0
+	output = PdfFileWriter()
 	for pdf in inputs:
 		for pagenr in range(pdf.getNumPages()):
 			output.addPage(pdf.getPage(pagenr))
@@ -82,16 +103,23 @@ def cat(files):
 	outputStream = file(outputfilename, "wb")
 	output.write(outputStream)
 	outputStream.close()
-	print (str(i)+" pages processed")
-###### end cat ######
+	if verbose: print (str(i)+" pages processed")
+###### end function cat ######
 
-def split(files):
+def split(files, verbose):
+
+	for infilename in files:
+		if not os.path.exists(infilename):
+			halp()
+			print ("error: "+infilename+" does not exist... exiting nao")
+			sys.exit(2) # pdf file is no pdf file...
 	inputs = []
 	try:
 		for i in files:
 			inputs.append(PdfFileReader(file(i, "rb")))
 	except:
 		halp()
+		print ("there has been an error of unfortunate proportions")
 		sys.exit(2) # pdf file is no pdf file...
 	i=0
 	j=0
@@ -108,87 +136,78 @@ def split(files):
 			outputStream.close()
 			j=j+1
 		i=i+1
-# 	print (str(j)+" pages in "+str(i)+" files processed")
-###### end split ######
+	if verbose: print (str(j)+" pages in "+str(i)+" files processed")
+###### end function split ######
 
-def select(args):
-	operations = []
-	outputfilename = args[-1]
-	nr_of_files = 0
-	for i in args[:-1]:
-		if (re.match('.*?\.pdf', i)):
-			nr_of_files = nr_of_files + 1
-			operations.append({"name":i,"pages":[]})
-		else:
-			if (re.match('[0-9]+-[0-9]+', i)):
-				(begin,sep,end) = i.partition("-")
-				for j in range(int(begin), int(end)+1):
-					operations[-1]["pages"].append(int(j))
-			else:
-				operations[-1]["pages"].append(int(i))
-# 	print (str(operations)+"output: "+str(outputfilename))
-# 	sys.exit(0)
+def select(filesandranges, outputfilename, verbose):
+
+ 	if verbose: print (str(filesandranges)+"\noutput: "+str(outputfilename))
+
+	for i in range(len(filesandranges)):
+		if not os.path.exists(filesandranges[i]['name']):
+			halp()
+			print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
+			sys.exit(2) # pdf file is no pdf file...
+	if not os.path.exists(outputfilename):
+		halp()
+		print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
+		sys.exit(2) # pdf file is no pdf file...
+
 	output = PdfFileWriter()
-# 	try:
-	for pdf in operations:
-		print (pdf["name"])
-		fiel = PdfFileReader(file(pdf["name"], "rb"))
-		for pagenr in pdf["pages"]:
-			if (not (pagenr > fiel.getNumPages()) and not(pagenr < 1)):
-				output.addPage(fiel.getPage(pagenr-1))
-			else:
-				halp()
-				print("one or more pages are not in the chosen PDF")
-				sys.exit(3) #wrong pages or ranges
-# 	except:
-# 		halp()
-# 		sys.exit(2) # pdf file is no pdf file...h
+ 	try:
+		for pdf in filesandranges:
+			fiel = PdfFileReader(file(pdf["name"], "rb"))
+			for pagenr in pdf["pages"]:
+				if (not (pagenr > fiel.getNumPages()) and not(pagenr < 1)):
+					output.addPage(fiel.getPage(pagenr-1))
+				else:
+					print("one or more pages are not in the chosen PDF")
+					halp()
+					sys.exit(3) #wrong pages or ranges
+ 	except:
+ 		halp()
+ 		sys.exit(2) # pdf file is no pdf file...h
 	if (not os.path.exists(outputfilename)):
 		outputStream = file(outputfilename, "wb")
 		output.write(outputStream)
 		outputStream.close()
 	else:
 		print ("file exists, discontinuing operation")
-###### end select ######
+###### end function select ######
 
-def delete(args):
-	operations = []
-	outputfilename = args[-1]
-	nr_of_files = 0
-	for i in args[:-1]:
-		if (re.match('.*?\.pdf', i)):
-			nr_of_files = nr_of_files + 1
-			operations.append({"name":i,"pages":[]})
-		else:
-			if (re.match('[0-9]+-[0-9]+', i)):
-				(begin,sep,end) = i.partition("-")
-				for j in range(int(begin), int(end)+1):
-					operations[-1]["pages"].append(int(j))
-			else:
-				operations[-1]["pages"].append(int(i))
-# 	print (str(operations)+"output: "+str(outputfilename))
-# 	sys.exit(0)
+def delete(filesandranges, outputfilename, verbose):
+
+	for i in range(len(filesandranges)):
+		if not os.path.exists(filesandranges[i]['name']):
+			halp()
+			print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
+			sys.exit(2) # pdf file is no pdf file...
+	if not os.path.exists(outputfilename):
+		halp()
+		print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
+		sys.exit(2) # pdf file is no pdf file...
+
 	output = PdfFileWriter()
-# 	try:
-	for pdf in operations:
-		print (pdf["name"])
-		fiel = PdfFileReader(file(pdf["name"], "rb"))
-# 		for pagenr in pdf["pages"]:
-		for pagenr in range(1,fiel.getNumPages()+1):
-			if (pagenr not in pdf["pages"]):
-				output.addPage(fiel.getPage(pagenr-1))
-			else:
-				print ("skipping page nr: "+str(pagenr))
-# 	except:
-# 		halp()
-# 		sys.exit(2) # pdf file is no pdf file...h
+ 	try:
+		for pdf in filesandranges:
+			print (pdf["name"])
+			fiel = PdfFileReader(file(pdf["name"], "rb"))
+
+			for pagenr in range(1,fiel.getNumPages()+1):
+				if (pagenr not in pdf["pages"]):
+					output.addPage(fiel.getPage(pagenr-1))
+#				else:
+#					print ("skipping page nr: "+str(pagenr))
+	except:
+ 		halp()
+ 		sys.exit(2) # pdf file is no pdf file...
 	if (not os.path.exists(outputfilename)):
 		outputStream = file(outputfilename, "wb")
 		output.write(outputStream)
 		outputStream.close()
 	else:
 		print ("file exists, discontinuing operation")
-###### end delete ######
+###### end function delete ######
 
 
 parse_args(sys.argv)
