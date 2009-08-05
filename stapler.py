@@ -86,10 +86,10 @@ def cat(infilenames, outputfilename, verbose):
 			sys.exit(2) # pdf file is no pdf file...
 	if os.path.exists(outputfilename):
 		halp()
-		print ("error: "+infilename+" does already exist... exiting nao")
+		print ("error: "+outputfilename+" does already exist... exiting nao")
 		sys.exit(2) # pdf file is no pdf file...
 	try: 
-		for i in infilenames[:-1]:
+		for i in infilenames:
 			inputs.append(PdfFileReader(file(i, "rb")))
 	except:
 		halp()
@@ -97,6 +97,7 @@ def cat(infilenames, outputfilename, verbose):
 	
 	i = 0
 	output = PdfFileWriter()
+
 	for pdf in inputs:
 		for pagenr in range(pdf.getNumPages()):
 			output.addPage(pdf.getPage(pagenr))
