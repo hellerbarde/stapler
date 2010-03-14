@@ -2,11 +2,17 @@
 # -*- coding: utf-8 -*-
 """Stapler is a pure-python tool for modifying PDF files."""
 
+from optparse import OptionParser
 import os.path
 from os.path import splitext
 import math
 import re
 import sys
+
+# pyPdf is using some code deprecated in Python 2.6.
+# That's sad, but no need to bug the user with it.
+import warnings
+warnings.simplefilter('ignore', DeprecationWarning)
 
 from pyPdf import PdfFileWriter, PdfFileReader
 
@@ -17,36 +23,48 @@ VERSION = (0, 3, 0)
 __version__ = '.'.join(map(str, VERSION))
 
 
-#####################################
-# Handle all command line arguments #
-#####################################
-def parse_args(argv):
-    mode = ""
+def parse_args():
+    """
+    Handle all command line arguments and pass them on to the respective
+    commands.
+
     # Possible modes are:
-    # cat   - concatenate multiple PDFs
-    # split - split a pdf into single pages
-    # del   - delete single pages or ranges
-    # sel   - select single pages or ranges (opposite of del)
+    cat - concatenate multiple PDFs
+    split - split a pdf into single pages
+    del - delete single pages or ranges
+    sel - select single pages or ranges (opposite of del)
+    """
+
+    usage = """usage: %prog [options] mode input.pdf ... [output.pdf]
+    Modes:
+    cat: concatenate all input pdf files (output is needed for this mode)
+    split: create one file per page in input pdf files (no output needed)
+    sel: <inputfile> <pagenr>|<pagerange> ... (output needed)
+         Select the given pages/ranges from input files
+    del: <inputfile> <pagenr>|<pagerange> ... (output needed)
+         Select all but the given pages/ranges from input files"""
+    parser = OptionParser(usage=usage)
+    parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
+                      default=False)
+    (options, args) = parser.parse_args()
+
+    mode = ""
 
     modes = ["cat", "split", "del", "sel"]
 
-    if (len(argv) < 3):
-        print "too few arguments"
-        halp()
-        sys.exit(0)
+    if (len(args) < 2):
+        print "Error: Not enough arguments"
+        parser.print_help()
+        sys.exit(1)
 
-    if argv[1] == "-h":
-        halp()
-        sys.exit(0)
-
-    mode = argv[1]
-    files = argv[2:]
+    mode = args[0]
+    files = args[1:]
     if (mode in modes):
-        print "mode: "+mode
+        print "Mode: %s" % mode
     else:
-        print "please input a valid mode"
-        halp()
-        sys.exit()
+        print "Error: Please enter a valid mode"
+        parser.print_help()
+        sys.exit(1)
 
     if (mode == "cat"):
         cat(files[:-1],files[-1], True)
@@ -68,15 +86,6 @@ def parse_args(argv):
         delete(operations, files[-1], True)
     elif (mode == "sel"):
         select(operations, files[-1], True)
-
-
-def halp():
-    print ("""Usage: stapler mode arguments [output]
-    arguments:
-        cat: input pdf files (output is needed for this mode)
-        split: input pdf files (no output needed)
-        sel: <inputfile> <pagenr>|<pagerange> ... (output needed)
-        del: <inputfile> <pagenr>|<pagerange> ... (output needed)""")
 
 
 def cat(infilenames, outputfilename, verbose):
@@ -112,7 +121,6 @@ def cat(infilenames, outputfilename, verbose):
 
 
 def split(files, verbose):
-
     for infilename in files:
         if not os.path.exists(infilename):
             halp()
@@ -145,7 +153,6 @@ def split(files, verbose):
 
 
 def select(filesandranges, outputfilename, verbose):
-
     if verbose:
         print (str(filesandranges)+"\noutput: "+str(outputfilename))
 
@@ -182,7 +189,6 @@ def select(filesandranges, outputfilename, verbose):
 
 
 def delete(filesandranges, outputfilename, verbose):
-
     for i in range(len(filesandranges)):
         if not os.path.exists(filesandranges[i]['name']):
             halp()
