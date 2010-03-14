@@ -5,7 +5,7 @@
 from optparse import OptionParser
 import sys
 
-from . import commands
+from . import commands, CommandError
 
 
 def main():
