@@ -3,18 +3,9 @@
 """Stapler is a pure-python tool for modifying PDF files."""
 
 from optparse import OptionParser
-import os.path
-from os.path import splitext
-import math
-import re
 import sys
 
-# pyPdf is using some code deprecated in Python 2.6.
-# That's sad, but no need to bug the user with it.
-import warnings
-warnings.simplefilter('ignore', DeprecationWarning)
-
-from pyPdf import PdfFileWriter, PdfFileReader
+from staplelib import staples, CommandError
 
 
 __author__ = 'Philip Stark, Fred Wenzel'
@@ -23,16 +14,10 @@ VERSION = (0, 3, 0)
 __version__ = '.'.join(map(str, VERSION))
 
 
-def parse_args():
+def main():
     """
     Handle all command line arguments and pass them on to the respective
     commands.
-
-    # Possible modes are:
-    cat - concatenate multiple PDFs
-    split - split a pdf into single pages
-    del - delete single pages or ranges
-    sel - select single pages or ranges (opposite of del)
     """
 
     usage = """usage: %prog [options] mode input.pdf ... [output.pdf]
@@ -48,178 +33,35 @@ def parse_args():
                       default=False)
     (options, args) = parser.parse_args()
 
-    mode = ""
-
-    modes = ["cat", "split", "del", "sel"]
-
     if (len(args) < 2):
         print "Error: Not enough arguments"
         parser.print_help()
         sys.exit(1)
 
+    modes = {
+        "cat": staples.concatenate,
+        "split": staples.split,
+        "del": staples.delete,
+        "sel": staples.select
+    }
+
     mode = args[0]
-    files = args[1:]
-    if (mode in modes):
-        print "Mode: %s" % mode
-    else:
+    args = args[1:]
+    if not mode in modes:
         print "Error: Please enter a valid mode"
         parser.print_help()
         sys.exit(1)
 
-    if (mode == "cat"):
-        cat(files[:-1],files[-1], True)
-    elif (mode == "split"):
-        split(files, True)
-    else:
-        operations = []
-        for inputname in files[:-1]:
-            if (re.match('.*?\.pdf', inputname)):
-                operations.append({"name":inputname,"pages":[]})
-            else:
-                if (re.match('[0-9]+-[0-9]+', inputname)):
-                    (begin,sep,end) = inputname.partition("-")
-                    for j in range(int(begin), int(end)+1):
-                        operations[-1]["pages"].append(int(j))
-                else:
-                    operations[-1]["pages"].append(int(inputname))
-    if (mode == "del"):
-        delete(operations, files[-1], True)
-    elif (mode == "sel"):
-        select(operations, files[-1], True)
+    if options.verbose:
+        print "Mode: %s" % mode
 
-
-def cat(infilenames, outputfilename, verbose):
-    inputs = []
-    for infilename in infilenames:
-        print infilename
-        if not os.path.exists(infilename):
-            halp()
-            print ("error: "+infilename+" does not exist... exiting nao")
-            sys.exit(2) # pdf file is no pdf file...
-    if os.path.exists(outputfilename):
-        halp()
-        print ("error: "+outputfilename+" does already exist... exiting nao")
-        sys.exit(2) # pdf file is no pdf file...
+    # dispatch call to known subcommand
     try:
-        for i in infilenames:
-            inputs.append(PdfFileReader(file(i, "rb")))
-    except:
-        halp()
-        sys.exit(2) # pdf file is no pdf file...
-
-    i = 0
-    output = PdfFileWriter()
-
-    for pdf in inputs:
-        for pagenr in range(pdf.getNumPages()):
-            output.addPage(pdf.getPage(pagenr))
-            i=i+1
-    outputStream = file(outputfilename, "wb")
-    output.write(outputStream)
-    outputStream.close()
-    if verbose: print (str(i)+" pages processed")
-
-
-def split(files, verbose):
-    for infilename in files:
-        if not os.path.exists(infilename):
-            halp()
-            print ("error: "+infilename+" does not exist... exiting nao")
-            sys.exit(2) # pdf file is no pdf file...
-    inputs = []
-    try:
-        for i in files:
-            inputs.append(PdfFileReader(file(i, "rb")))
-    except:
-        halp()
-        print ("there has been an error of unfortunate proportions")
-        sys.exit(2) # pdf file is no pdf file...
-    i=0
-    j=0
-    for pdf in inputs:
-        for pagenr in range(pdf.getNumPages()):
-            output = PdfFileWriter()
-            output.addPage(pdf.getPage(pagenr))
-            (name, ext) = splitext(files[i])
-            my_str = "%0" + str(math.ceil(math.log10(pdf.getNumPages()))) + "d"
-            my_str = my_str % (pagenr+1)
-            print (name+"p"+my_str+ext)
-            outputStream = file(name+"p"+my_str+ext, "wb")
-            output.write(outputStream)
-            outputStream.close()
-            j=j+1
-        i=i+1
-    if verbose: print (str(j)+" pages in "+str(i)+" files processed")
-
-
-def select(filesandranges, outputfilename, verbose):
-    if verbose:
-        print (str(filesandranges)+"\noutput: "+str(outputfilename))
-
-    for i in range(len(filesandranges)):
-        if not os.path.exists(filesandranges[i]['name']):
-            halp()
-            print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
-            sys.exit(2) # pdf file is no pdf file...
-    if os.path.exists(outputfilename):
-        halp()
-        print ("error: "+filesandranges[i]['name']+" does already exist... exiting nao")
-        sys.exit(2) # pdf file is no pdf file...
-
-    output = PdfFileWriter()
-    try:
-        for pdf in filesandranges:
-            fiel = PdfFileReader(file(pdf["name"], "rb"))
-            for pagenr in pdf["pages"]:
-                if (not (pagenr > fiel.getNumPages()) and not(pagenr < 1)):
-                    output.addPage(fiel.getPage(pagenr-1))
-                else:
-                    print("one or more pages are not in the chosen PDF")
-                    halp()
-                    sys.exit(3) #wrong pages or ranges
-    except:
-         halp()
-         sys.exit(2) # pdf file is no pdf file...h
-    if (not os.path.exists(outputfilename)):
-        outputStream = file(outputfilename, "wb")
-        output.write(outputStream)
-        outputStream.close()
-    else:
-        print ("file exists, discontinuing operation")
-
-
-def delete(filesandranges, outputfilename, verbose):
-    for i in range(len(filesandranges)):
-        if not os.path.exists(filesandranges[i]['name']):
-            halp()
-            print ("error: "+filesandranges[i]['name']+" does not exist... exiting nao")
-            sys.exit(2) # pdf file is no pdf file...
-    if os.path.exists(outputfilename):
-        halp()
-        print ("error: "+filesandranges[i]['name']+" does already exist... exiting nao")
-        sys.exit(2) # pdf file is no pdf file...
-
-    output = PdfFileWriter()
-    try:
-        for pdf in filesandranges:
-            print (pdf["name"])
-            fiel = PdfFileReader(file(pdf["name"], "rb"))
-
-            for pagenr in range(1,fiel.getNumPages()+1):
-                if (pagenr not in pdf["pages"]):
-                    output.addPage(fiel.getPage(pagenr-1))
-#                else:
-#                    print ("skipping page nr: "+str(pagenr))
-    except:
-         halp()
-         sys.exit(2) # pdf file is no pdf file...
-    if (not os.path.exists(outputfilename)):
-        outputStream = file(outputfilename, "wb")
-        output.write(outputStream)
-        outputStream.close()
-    else:
-        print ("file exists, discontinuing operation")
+        modes[mode](options=options, args=args)
+    except CommandError, e:
+        sys.stderr.write(str('Error: %s\n' % e))
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    parse_args()
+    main()
