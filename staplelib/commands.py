@@ -3,11 +3,6 @@
 from os.path import splitext
 import math
 
-# pyPdf is using some code deprecated in Python 2.6.
-# That's sad, but no need to bug the user with it.
-import warnings
-warnings.simplefilter('ignore', DeprecationWarning)
-
 from pyPdf import PdfFileWriter, PdfFileReader
 
 from . import CommandError, inputhelper
