@@ -1,7 +1,7 @@
 """Module containing the actual commands stapler understands."""
 
-from os.path import splitext
 import math
+import os.path
 
 from pyPdf import PdfFileWriter, PdfFileReader
 
@@ -21,7 +21,8 @@ def concatenate(options, args):
 
     inputs = []
     for infile in infilenames:
-        print infile
+        if verbose:
+            print infile
         try:
             inputs.append(PdfFileReader(file(infile, "rb")))
         except Exception, e:
@@ -66,7 +67,7 @@ def split(options, args):
             output = PdfFileWriter()
             output.addPage(pdf.getPage(pagenr))
 
-            (name, ext) = splitext(files[filecount])
+            (name, ext) = os.path.splitext(os.path.basename(files[filecount]))
             my_str = "%0" + str(math.ceil(math.log10(pdf.getNumPages()))) + "d"
             my_str = my_str % (pagenr+1)
             if verbose:
