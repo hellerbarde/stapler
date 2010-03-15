@@ -3,30 +3,42 @@ Stapler
 
 History
 -------
-Stapler is a pure python replacement for PDFtk, a tool for manipulating PDF
-documents from the command line. PDFtk was written in Java, and natively
-compiled with gcj. And it has been discontinued a few years ago and bitrot is
-setting in (i.e. it does not compile anymore in archlinux).
-Since I used it quite a lot, I decided to look for an alternative and found
-pypdf, a PDF library written in pure Python. I couldn't find a tool which
-actually uses the library, so I started writing my own.
-At some point I plan on providing a GUI, but the command line version will
-always exist.
+Stapler is a pure Python replacement for [PDFtk][pdftk], a tool for manipulating
+PDF documents from the command line. PDFtk was written in Java and C++, and
+is natively compiled with gcj. Sadly, it has been discontinued a few years ago
+and bitrot is setting in (e.g., it does not compile easily on a number of
+platforms).
+
+Philip Stark decided to look for an alternative and found pypdf, a PDF library
+written in pure Python. He couldn't find a tool which actually used the
+library, so he started writing his own.
+
+This version of stapler is Fred Wenzel's fork of the project, with a completely
+refactored source code, tests, and added functionality.
+
+Like pdftk, stapler is a command-line tool. If you would like to add a GUI,
+compile it into a binary for your favorite platform, or contribute anything else,
+feel free to fork and send me a pull request.
+
+[pdftk]: http://www.pdfhacks.com/pdftk/
 
 License
 -------
-A simplified BSD Style license describes the terms under which Stapler is
-distributed. A copy of the BSD Style License used is found in the file ``LICENSE``
+Stapler version 0.2 was written in 2009 by Philip Stark.
+Stapler version 0.3 was written in 2010 by Fred Wenzel.
+
+For a list of contributors, check the ``CONTRIBUTORS`` file.
+
+Stapler is distributed under a BSD license. A copy of the BSD Style 
+License used can be found in the file ``LICENSE``.
 
 Usage
 -----
-I am too lazy at the moment to learn how to create a proper man page so this has
-to suffice.
-
 There are 4 modes in Stapler:
 
 ### cat
-Works like the normal unix utility "cat", meaning it con_cat_enates files.
+Works like the normal unix utility "cat", meaning it con<em>cat</em>enates
+files.
 
 The syntax is delightfully simple:
 
@@ -37,7 +49,7 @@ The syntax is delightfully simple:
     # thing to "output.pdf"
 
 You can specify as many input files as you want, it always cats all but the
-last file specified and writes the whole thing into the last file specified
+last file specified and writes the whole thing into the last file specified.
 
 ### split:
 Splits the specified pdf files into their single pages and writes each page
@@ -59,7 +71,7 @@ Multiple files can be specified, they will be processed as if you called
 single instances of stapler.
 
 ### select/delete (called with ``sel`` and ``del``, respectively)
-These are the most sophisticated modes. With select you can cherrypick pages
+These are the most sophisticated modes. With select, you can cherry-pick pages
 out of pdfs and concatenate them into a new pdf file.
 
 Syntax:
