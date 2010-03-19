@@ -1,10 +1,14 @@
 Stapler
 =======
 
+Stapler is a pure Python alternative to [PDFtk][pdftk], a tool for manipulating
+PDF documents from the command line.
+
+[pdftk]: http://www.pdfhacks.com/pdftk/
+
 History
 -------
-Stapler is a pure Python replacement for [PDFtk][pdftk], a tool for manipulating
-PDF documents from the command line. PDFtk was written in Java and C++, and
+PDFtk was written in Java and C++, and
 is natively compiled with gcj. Sadly, it has been discontinued a few years ago
 and bitrot is setting in (e.g., it does not compile easily on a number of
 platforms).
@@ -19,8 +23,6 @@ refactored source code, tests, and added functionality.
 Like pdftk, stapler is a command-line tool. If you would like to add a GUI,
 compile it into a binary for your favorite platform, or contribute anything else,
 feel free to fork and send me a pull request.
-
-[pdftk]: http://www.pdfhacks.com/pdftk/
 
 License
 -------
