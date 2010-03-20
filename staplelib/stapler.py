@@ -8,7 +8,8 @@ import sys
 from . import commands, CommandError
 
 
-USAGE = """usage: %prog [options] mode input.pdf ... [output.pdf]
+USAGE = """
+usage: %prog [options] mode input.pdf ... [output.pdf]
 
 Modes:
 burst/split: create one file per page in input pdf files (no output needed)
@@ -22,7 +23,10 @@ Page ranges:
     n - single numbers mean single pages (e.g., 15)
     n-m - page ranges include the entire specified range (e.g. 1-6)
     m-n - negative ranges sort pages backwards (e.g. 6-3)
-"""
+
+Extended page range options:
+    ...-end will be replaced with the last page in the file
+""".strip()
 
 
 def main():
