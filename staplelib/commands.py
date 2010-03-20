@@ -8,8 +8,13 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from . import CommandError, iohelper
 
 
-def select(options, args):
-    """Concatenate files / select pages from files."""
+def select(options, args, inverse=False):
+    """
+    Concatenate files / select pages from files.
+
+    inverse=True excludes rather than includes the selected pages from
+    the file.
+    """
 
     filesandranges = iohelper.parse_ranges(args[:-1])
     outputfilename = args[-1]
@@ -25,8 +30,12 @@ def select(options, args):
             if verbose:
                 print input['name']
 
-            # empty range means "all pages"
-            pagerange = input['pages'] or range(1, pdf.getNumPages()+1)
+            # empty range means "include all pages"
+            if not inverse:
+                pagerange = input['pages'] or range(1, pdf.getNumPages()+1)
+            else:
+                pagerange = [p for p in range(1, pdf.getNumPages()+1) if
+                             p not in input['pages']]
 
             for pageno in pagerange:
                 if 1 <= pageno <= pdf.getNumPages():
@@ -46,33 +55,7 @@ def select(options, args):
 def delete(options, args):
     """Concatenate files and remove pages from files."""
 
-    filesandranges = iohelper.parse_ranges(args[:-1])
-    outputfilename = args[-1]
-    verbose = options.verbose
-
-    if not filesandranges or not outputfilename:
-        raise CommandError("Both input and output filenames are required.")
-
-    iohelper.check_output_file(outputfilename)
-
-    output = PdfFileWriter()
-    try:
-        for pdf in filesandranges:
-            if verbose:
-                print pdf["name"]
-            fiel = PdfFileReader(file(pdf["name"], "rb"))
-
-            for pagenr in range(1,fiel.getNumPages()+1):
-                if (pagenr not in pdf["pages"]):
-                    output.addPage(fiel.getPage(pagenr-1))
-                elif verbose:
-                    print "Skipping page: %d" % pagenr
-    except Exception, e:
-        raise CommandError(e)
-
-    outputStream = file(outputfilename, "wb")
-    output.write(outputStream)
-    outputStream.close()
+    return select(options, args, inverse=True)
 
 
 def split(options, args):
@@ -84,17 +67,15 @@ def split(options, args):
     if not files:
         raise CommandError("No input files specified.")
 
-    iohelper.check_input_files(files)
-
     inputs = []
     try:
-        for i in files:
-            inputs.append(PdfFileReader(file(i, "rb")))
+        for f in files:
+            inputs.append(iohelper.read_pdf(i))
     except Exception, e:
         raise CommandError(e)
 
-    filecount=0
-    pagecount=0
+    filecount = 0
+    pagecount = 0
     for input in inputs:
         # zero-padded output file name
         (base, ext) = os.path.splitext(os.path.basename(files[filecount]))
@@ -111,9 +92,8 @@ def split(options, args):
             outputname = output_template % (pageno+1)
             if verbose:
                 print outputname
-            outputStream = file(outputname, "wb")
-            output.write(outputStream)
-            outputStream.close()
+            iohelper.write_pdf(output, outputname)
+
             pagecount += 1
         filecount += 1
 

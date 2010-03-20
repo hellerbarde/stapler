@@ -54,12 +54,18 @@ def parse_ranges(files_and_ranges):
             if not match:
                 raise CommandError('Invalid range: %s' % inputname)
 
+            current = operations[-1]
+            max_page = current['pdf'].getNumPages()
             # allow "end" as alias for the last page
             replace_end = lambda page: (
-                operations[-1]['pdf'].getNumPages() if page == 'end' else
-                int(page))
+                max_page if page.lower() == 'end' else int(page))
             begin = replace_end(match.group(1))
             end = replace_end(match.group(2)) if match.group(2) else begin
+
+            if begin > max_page or end > max_page:
+                raise CommandError(
+                    'Range %s-%s exceeds maximum page number %s of file %s' % (
+                        begin, end, max_page, current['name']))
 
             # negative ranges sort pages backwards
             if begin < end:
@@ -67,6 +73,6 @@ def parse_ranges(files_and_ranges):
             else:
                 pagerange = range(end, begin+1)[::-1]
 
-            operations[-1]['pages'] += pagerange
+            current['pages'] += pagerange
 
     return operations
