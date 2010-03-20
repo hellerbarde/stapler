@@ -6,6 +6,7 @@ import re
 from pyPdf import PdfFileWriter, PdfFileReader
 
 from . import CommandError
+import staplelib
 
 
 ROTATION_NONE = 0
@@ -29,6 +30,11 @@ def write_pdf(pdf, filename):
     """Write the content of a PdfFileWriter object to a file."""
     if os.path.exists(filename):
         raise CommandError("File already exists: %s" % filename)
+
+    opt = staplelib.OPTIONS
+    if opt:
+        if opt.ownerpw or opt.userpw:
+            pdf.encrypt(opt.userpw or '', opt.ownerpw)
 
     outputStream = file(filename, "wb")
     pdf.write(outputStream)

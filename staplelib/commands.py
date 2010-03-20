@@ -6,9 +6,10 @@ import os.path
 from pyPdf import PdfFileWriter, PdfFileReader
 
 from . import CommandError, iohelper
+import staplelib
 
 
-def select(options, args, inverse=False):
+def select(args, inverse=False):
     """
     Concatenate files / select pages from files.
 
@@ -18,7 +19,7 @@ def select(options, args, inverse=False):
 
     filesandranges = iohelper.parse_ranges(args[:-1])
     outputfilename = args[-1]
-    verbose = options.verbose
+    verbose = staplelib.OPTIONS.verbose
 
     if not filesandranges or not outputfilename:
         raise CommandError("Both input and output filenames are required.")
@@ -56,17 +57,17 @@ def select(options, args, inverse=False):
     iohelper.write_pdf(output, outputfilename)
 
 
-def delete(options, args):
+def delete(args):
     """Concatenate files and remove pages from files."""
 
-    return select(options, args, inverse=True)
+    return select(args, inverse=True)
 
 
-def split(options, args):
+def split(args):
     """Burst an input file into one file per page."""
 
     files = args
-    verbose = options.verbose
+    verbose = staplelib.OPTIONS.verbose
 
     if not files:
         raise CommandError("No input files specified.")

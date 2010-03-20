@@ -6,6 +6,7 @@ from optparse import OptionParser
 import sys
 
 from . import commands, CommandError
+import staplelib
 
 
 USAGE = """
@@ -30,21 +31,26 @@ Extended page range options:
         respectively. (e.g., 1-15R)
 """.strip()
 
+# command line option parser
+parser = OptionParser(usage=USAGE)
+parser.add_option('-o', '--ownerpw', action='store', dest='ownerpw',
+                  help='Set owner password to encrypt output file with',
+                  default=None)
+parser.add_option('-u', '--userpw', action='store', dest='userpw',
+                  help='Set user password to encrypt output file with',
+                  default=None)
+parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
+                  default=False)
 
 def main():
     """
     Handle all command line arguments and pass them on to the respective
     commands.
     """
-    parser = OptionParser(usage=USAGE)
-    parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-                      default=False)
-    (options, args) = parser.parse_args()
+    (staplelib.OPTIONS, args) = parser.parse_args()
 
     if (len(args) < 2):
-        print "Error: Not enough arguments"
-        parser.print_help()
-        sys.exit(1)
+        print_error("Not enough arguments", show_usage=True)
 
     modes = {
         "cat": commands.select,
@@ -57,16 +63,23 @@ def main():
     mode = args[0]
     args = args[1:]
     if not mode in modes:
-        print "Error: Please enter a valid mode"
-        parser.print_help()
-        sys.exit(1)
+        print_error('Please enter a valid mode', show_usage=True)
 
-    if options.verbose:
+    if staplelib.OPTIONS.verbose:
         print "Mode: %s" % mode
 
     # dispatch call to known subcommand
     try:
-        modes[mode](options=options, args=args)
+        modes[mode](args)
     except CommandError, e:
-        sys.stderr.write(str('Error: %s\n' % e))
-        sys.exit(1)
+        print_error(e)
+
+
+def print_error(msg, code=1, show_usage=False):
+    """Pretty-print an error to the user."""
+    sys.stderr.write(str('Error: %s\n' % msg))
+
+    if show_usage:
+        sys.stderr.write("\n%s\n" % parser.get_usage())
+
+    sys.exit(code)
