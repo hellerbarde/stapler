@@ -32,16 +32,20 @@ def select(options, args, inverse=False):
 
             # empty range means "include all pages"
             if not inverse:
-                pagerange = input['pages'] or range(1, pdf.getNumPages()+1)
+                pagerange = input['pages'] or [
+                    (p, iohelper.ROTATION_NONE) for p in
+                    range(1, pdf.getNumPages()+1)]
             else:
-                pagerange = [p for p in range(1, pdf.getNumPages()+1) if
-                             p not in input['pages']]
+                excluded = [p for p, r in input['pages']]
+                pagerange = [(p, iohelper.ROTATION_NONE) for p in
+                             range(1, pdf.getNumPages()+1) if
+                             p not in excluded]
 
-            for pageno in pagerange:
+            for pageno, rotate in pagerange:
                 if 1 <= pageno <= pdf.getNumPages():
                     if verbose:
-                        print "Using page: %d" % pageno
-                    output.addPage(pdf.getPage(pageno-1))
+                        print "Using page: %d (rotation: %d deg.)" % (pageno, rotate)
+                    output.addPage(pdf.getPage(pageno-1).rotateClockwise(rotate))
                 else:
                     raise CommandError(
                         "Page %d not found in %s." % (pageno, input['name']))

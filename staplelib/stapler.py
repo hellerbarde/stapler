@@ -16,16 +16,18 @@ burst/split: create one file per page in input pdf files (no output needed)
 cat/sel: <inputfile> [<pagerange>] ... (output needed)
      Select the given pages/ranges from input files.
      No range means all pages.
-del: <inputfile> [<pagerange>] ... (output needed)
+del: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
      Select all but the given pages/ranges from input files.
 
 Page ranges:
     n - single numbers mean single pages (e.g., 15)
     n-m - page ranges include the entire specified range (e.g. 1-6)
-    m-n - negative ranges sort pages backwards (e.g. 6-3)
+    m-n - negative ranges sort pages backwards (e.g., 6-3)
 
 Extended page range options:
     ...-end will be replaced with the last page in the file
+    R, L, or D will rotate the respective range +90, -90, or 180 degrees,
+        respectively. (e.g., 1-15R)
 """.strip()
 
 

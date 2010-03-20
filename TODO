@@ -3,7 +3,7 @@ Comparison with pdftk features:
 
 [x] Merge PDF Documents
 [x] Split PDF Pages into a New Document
-[ ] Rotate PDF Pages or Documents
+[x] Rotate PDF Pages or Documents
 [ ] Decrypt Input as Necessary (Password Required)
 [ ] Encrypt Output as Desired
 [?] Fill PDF Forms with FDF Data or XFDF Data and/or Flatten Forms
@@ -15,3 +15,8 @@ Comparison with pdftk features:
 [x] Burst a PDF Document into Single Pages
 [ ] Uncompress and Re-Compress Page Streams
 [ ] Repair Corrupted PDF (Where Possible)
+
+Known issues:
+- The same page of the same input file cannot be added to the output twice
+  with two different rotations (e.g., ``cat foo.pdf 1R 1D`` won't do what
+  you'd hope).

@@ -8,6 +8,16 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from . import CommandError
 
 
+ROTATION_NONE = 0
+ROTATION_RIGHT = 90
+ROTATION_TURN = 180
+ROTATION_LEFT = 270
+ROTATIONS = {'u': ROTATION_NONE,
+             'r': ROTATION_RIGHT,
+             'd': ROTATION_TURN,
+             'l': ROTATION_LEFT}
+
+
 def read_pdf(filename):
     """Open a PDF file with pyPdf."""
     if not os.path.exists(filename):
@@ -50,7 +60,7 @@ def parse_ranges(files_and_ranges):
                                "pdf": read_pdf(inputname),
                                "pages": []})
         else:
-            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?', inputname)
+            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)', inputname)
             if not match:
                 raise CommandError('Invalid range: %s' % inputname)
 
@@ -61,6 +71,8 @@ def parse_ranges(files_and_ranges):
                 max_page if page.lower() == 'end' else int(page))
             begin = replace_end(match.group(1))
             end = replace_end(match.group(2)) if match.group(2) else begin
+
+            rotate = ROTATIONS.get((match.group(3) or 'u').lower())
 
             if begin > max_page or end > max_page:
                 raise CommandError(
@@ -73,6 +85,7 @@ def parse_ranges(files_and_ranges):
             else:
                 pagerange = range(end, begin+1)[::-1]
 
-            current['pages'] += pagerange
+            for p in pagerange:
+                current['pages'].append((p, rotate))
 
     return operations
