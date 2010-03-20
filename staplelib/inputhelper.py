@@ -26,15 +26,23 @@ def parse_ranges(files_and_ranges):
 
     operations = []
     for inputname in files_and_ranges:
-        if (re.match('.*?\.pdf', inputname)):
-            operations.append({"name":inputname,"pages":[]})
+        if inputname.lower().endswith('.pdf'):
+            operations.append({"name": inputname, "pages": []})
         else:
-            if (re.match('[0-9]+-[0-9]+', inputname)):
-                (begin,sep,end) = inputname.partition("-")
-                for j in range(int(begin), int(end)+1):
-                    operations[-1]["pages"].append(int(j))
+            match = re.match('([0-9]+)(?:-([0-9]+))?', inputname)
+            if not match:
+                raise CommandError('Invalid range: %s' % inputname)
+
+            begin = int(match.group(1))
+            end = int(match.group(2) or begin) # "8" == "8-8"
+
+            # negative ranges sort pages backwards
+            if begin < end:
+                pagerange = range(begin, end+1)
             else:
-                operations[-1]["pages"].append(int(inputname))
+                pagerange = range(end, begin+1)[::-1]
+
+            operations[-1]['pages'] += pagerange
 
     check_input_files([ f['name'] for f in operations ])
 

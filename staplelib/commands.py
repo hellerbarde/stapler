@@ -8,43 +8,9 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from . import CommandError, inputhelper
 
 
-def concatenate(options, args):
-    infilenames = args[:-1]
-    outputfilename = args[-1]
-    verbose = options.verbose
-
-    if not infilenames or not outputfilename:
-        raise CommandError("Both input and output filenames are required.")
-
-    inputhelper.check_input_files(infilenames)
-    inputhelper.check_output_file(outputfilename)
-
-    inputs = []
-    for infile in infilenames:
-        if verbose:
-            print infile
-        try:
-            inputs.append(PdfFileReader(file(infile, "rb")))
-        except Exception, e:
-            raise CommandError(e)
-
-    output = PdfFileWriter()
-
-    pagecount = 0
-    for pdf in inputs:
-        for pagenr in range(pdf.getNumPages()):
-            output.addPage(pdf.getPage(pagenr))
-            pagecount += 1
-    outputStream = file(outputfilename, "wb")
-    output.write(outputStream)
-    outputStream.close()
-
-    if verbose:
-        print
-        print "%s page(s) processed" % pagecount
-
-
 def split(options, args):
+    """Burst an input file into one file per page."""
+
     files = args
     verbose = options.verbose
 
@@ -62,17 +28,23 @@ def split(options, args):
 
     filecount=0
     pagecount=0
-    for pdf in inputs:
-        for pagenr in range(pdf.getNumPages()):
-            output = PdfFileWriter()
-            output.addPage(pdf.getPage(pagenr))
+    for input in inputs:
+        # zero-padded output file name
+        (base, ext) = os.path.splitext(os.path.basename(files[filecount]))
+        output_template = ''.join([
+            base, '_',
+            '%0', str(math.ceil(math.log10(input.getNumPages()))), 'd',
+            ext
+        ])
 
-            (name, ext) = os.path.splitext(os.path.basename(files[filecount]))
-            my_str = "%0" + str(math.ceil(math.log10(pdf.getNumPages()))) + "d"
-            my_str = my_str % (pagenr+1)
+        for pageno in range(input.getNumPages()):
+            output = PdfFileWriter()
+            output.addPage(input.getPage(pageno))
+
+            outputname = output_template % (pageno+1)
             if verbose:
-                print (name+"p"+my_str+ext)
-            outputStream = file(name+"p"+my_str+ext, "wb")
+                print outputname
+            outputStream = file(outputname, "wb")
             output.write(outputStream)
             outputStream.close()
             pagecount += 1
@@ -84,6 +56,8 @@ def split(options, args):
 
 
 def select(options, args):
+    """Concatenate files / select pages from files."""
+
     filesandranges = inputhelper.parse_ranges(args[:-1])
     outputfilename = args[-1]
     verbose = options.verbose
@@ -95,19 +69,22 @@ def select(options, args):
 
     output = PdfFileWriter()
     try:
-        for pdf in filesandranges:
-            fiel = PdfFileReader(file(pdf["name"], "rb"))
+        for input in filesandranges:
+            pdf = PdfFileReader(file(input["name"], "rb"))
             if verbose:
-                print pdf['name']
+                print input['name']
 
-            for pagenr in pdf["pages"]:
-                if (not (pagenr > fiel.getNumPages()) and not(pagenr < 1)):
+            # empty range means "all pages"
+            pagerange = input['pages'] or range(1, pdf.getNumPages()+1)
+
+            for pageno in pagerange:
+                if 1 <= pageno <= pdf.getNumPages():
                     if verbose:
-                        print "Using page: %d" % pagenr
-                    output.addPage(fiel.getPage(pagenr-1))
+                        print "Using page: %d" % pageno
+                    output.addPage(pdf.getPage(pageno-1))
                 else:
                     raise CommandError(
-                        "Page %d not found in %s." % (pagenr, pdf['name']))
+                        "Page %d not found in %s." % (pageno, input['name']))
     except Exception, e:
         raise CommandError(e)
 

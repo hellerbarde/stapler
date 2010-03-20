@@ -8,21 +8,29 @@ import sys
 from . import commands, CommandError
 
 
+USAGE = """usage: %prog [options] mode input.pdf ... [output.pdf]
+
+Modes:
+burst/split: create one file per page in input pdf files (no output needed)
+cat/sel: <inputfile> [<pagerange>] ... (output needed)
+     Select the given pages/ranges from input files.
+     No range means all pages.
+del: <inputfile> [<pagerange>] ... (output needed)
+     Select all but the given pages/ranges from input files.
+
+Page ranges:
+    n - single numbers mean single pages (e.g., 15)
+    n-m - page ranges include the entire specified range (e.g. 1-6)
+    m-n - negative ranges sort pages backwards (e.g. 6-3)
+"""
+
+
 def main():
     """
     Handle all command line arguments and pass them on to the respective
     commands.
     """
-
-    usage = """usage: %prog [options] mode input.pdf ... [output.pdf]
-    Modes:
-    cat: concatenate all input pdf files (output is needed for this mode)
-    split: create one file per page in input pdf files (no output needed)
-    sel: <inputfile> <pagenr>|<pagerange> ... (output needed)
-         Select the given pages/ranges from input files
-    del: <inputfile> <pagenr>|<pagerange> ... (output needed)
-         Select all but the given pages/ranges from input files"""
-    parser = OptionParser(usage=usage)
+    parser = OptionParser(usage=USAGE)
     parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                       default=False)
     (options, args) = parser.parse_args()
@@ -33,10 +41,11 @@ def main():
         sys.exit(1)
 
     modes = {
-        "cat": commands.concatenate,
+        "cat": commands.select,
+        "sel": commands.select,
         "split": commands.split,
+        "burst": commands.split,
         "del": commands.delete,
-        "sel": commands.select
     }
 
     mode = args[0]

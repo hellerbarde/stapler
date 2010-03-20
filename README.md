@@ -36,28 +36,36 @@ License used can be found in the file ``LICENSE``.
 
 Usage
 -----
-There are 4 modes in Stapler:
+There are the following modes in Stapler:
 
-### cat
-Works like the normal unix utility "cat", meaning it con<em>cat</em>enates
-files.
+### select/delete (called with ``sel`` and ``del``, respectively)
+With select, you can cherry-pick pages from pdfs and concatenate them into 
+a new pdf file.
 
-The syntax is delightfully simple:
+Syntax:
 
-    stapler cat input1 [input2, input3, ...] output
-    # example:
-    stapler cat a.pdf b.pdf c.pdf output.pdf
-    # this would append "b.pdf" and "c.pdf" to "a.pdf" and write the whole
-    # thing to "output.pdf"
+    stapler sel input1 page_or_range [page_or_range ...] [input2 p_o_r ...]
 
-You can specify as many input files as you want, it always cats all but the
-last file specified and writes the whole thing into the last file specified.
+Examples:
+
+    # concatenate a and b into output.pdf
+    stapler sel a.pdf b.pdf output.pdf
+
+    # generate a pdf file called output.pdf with the following pages:
+    # 1, 4-8, 20-40 from a.pdf, 1-5 from b.pdf in this order
+    stapler sel a.pdf 1 4-8 20-40 b.pdf 1-5 output.pdf
+
+    # reverse some of the pages in a.pdf by specifying a negative range
+    stapler sel a.pdf 1-3 9-6 10 output.pdf
+
+The delete command works almost exactly the same as select, but inverse.
+It uses the pages and ranges which you _didn't_ specify.
 
 ### split:
 Splits the specified pdf files into their single pages and writes each page
 into it's own pdf file with this naming scheme:
 
-    ${origname}p${zeropaddedpagenr}.pdf
+    ${origname}_${zero-padded page no}.pdf
 
 Syntax:
 
@@ -67,29 +75,7 @@ Example for a file foobar.pdf with 20 pages:
 
     $ stapler split foobar.pdf
     $ ls
-        foobarp01.pdf foobarp02.pdf ... foobarp19.pdf foobarp20.pdf
+        foobar_01.pdf foobar_02.pdf ... foobar_19.pdf foobar_20.pdf
 
 Multiple files can be specified, they will be processed as if you called
 single instances of stapler.
-
-### select/delete (called with ``sel`` and ``del``, respectively)
-These are the most sophisticated modes. With select, you can cherry-pick pages
-out of pdfs and concatenate them into a new pdf file.
-
-Syntax:
-
-    stapler sel input1 page_or_range [page_or_range ...] [input2 p_o_r ...]
-
-Example:
-
-    stapler sel a.pdf 1 4-8 20-40 b.pdf 1-5 output.pdf
-    # this generates a pdf called output.pdf with the following pages:
-    # 1, 4-8, 20-40 from a.pdf, 1-5 from b.pdf in this order
-
-What you _cannot_ do yet is _not_ specifying any ranges. I will probably merge
-select and cat so that you can specify pages and ranges, but if you don't,
-it just uses the whole file.
-
-The delete command works almost exactly the same as select, but inverse.
-It cherry-picks the pages and ranges which you _didn't_ specify out of the
-pdfs.
