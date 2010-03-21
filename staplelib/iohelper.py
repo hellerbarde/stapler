@@ -1,7 +1,9 @@
 """Helper functions for user-supplied arguments and file I/O."""
 
+import getpass
 import os.path
 import re
+import sys
 
 from pyPdf import PdfFileWriter, PdfFileReader
 
@@ -23,7 +25,16 @@ def read_pdf(filename):
     """Open a PDF file with pyPdf."""
     if not os.path.exists(filename):
         raise CommandError("%s does not exist" % filename)
-    return PdfFileReader(file(filename, "rb"))
+    pdf = PdfFileReader(file(filename, "rb"))
+    if pdf.isEncrypted:
+        while True:
+            pw = prompt_for_pw(filename)
+            matched = pdf.decrypt(pw)
+            if matched:
+                break
+            else:
+                print "The password did not match."
+    return pdf
 
 
 def write_pdf(pdf, filename):
@@ -39,6 +50,18 @@ def write_pdf(pdf, filename):
     outputStream = file(filename, "wb")
     pdf.write(outputStream)
     outputStream.close()
+
+
+def prompt_for_pw(filename):
+    """Prompt the user for the password to access an input file."""
+    print 'Please enter a password to decrypt %s.' % filename
+    print '(The password will not be shown. Press ^C to cancel).'
+
+    try:
+        return getpass.getpass('--> ')
+    except KeyboardInterrupt:
+        sys.stderr.write('Aborted by user.\n')
+        sys.exit(2)
 
 
 def check_input_files(files):
