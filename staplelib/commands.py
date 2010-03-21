@@ -106,3 +106,22 @@ def split(args):
         print
         print "%d page(s) in %d file(s) processed." % (pagecount, filecount)
 
+
+def info(args):
+    """Display Metadata content for all input files."""
+    files = args
+
+    if not files:
+        raise CommandError("No input files specified.")
+
+    for f in files:
+        pdf = iohelper.read_pdf(f)
+        print "*** Metadata for %s" % f
+        print
+        info = pdf.documentInfo
+        if info:
+            for name, value in info.items():
+                print "    %s:  %s" % (name, value)
+        else:
+            print "    (No metadata found.)"
+        print

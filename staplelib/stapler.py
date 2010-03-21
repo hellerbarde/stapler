@@ -13,12 +13,15 @@ USAGE = """
 usage: %prog [options] mode input.pdf ... [output.pdf]
 
 Modes:
-burst/split: create one file per page in input pdf files (no output needed)
 cat/sel: <inputfile> [<pagerange>] ... (output needed)
-     Select the given pages/ranges from input files.
-     No range means all pages.
+    Select the given pages/ranges from input files.
+    No range means all pages.
 del: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
-     Select all but the given pages/ranges from input files.
+    Select all but the given pages/ranges from input files.
+burst/split: <inputfile> ... (no output needed)
+    Create one file per page in input pdf files (no output needed)
+info: <inputfile> ... (no output needed)
+    Display PDF metadata
 
 Page ranges:
     n - single numbers mean single pages (e.g., 15)
@@ -58,6 +61,7 @@ def main():
         "split": commands.split,
         "burst": commands.split,
         "del": commands.delete,
+        "info": commands.info,
     }
 
     mode = args[0]

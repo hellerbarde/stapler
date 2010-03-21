@@ -61,7 +61,7 @@ Examples:
 The delete command works almost exactly the same as select, but inverse.
 It uses the pages and ranges which you _didn't_ specify.
 
-### split:
+### split/burst:
 Splits the specified pdf files into their single pages and writes each page
 into it's own pdf file with this naming scheme:
 
@@ -79,3 +79,12 @@ Example for a file foobar.pdf with 20 pages:
 
 Multiple files can be specified, they will be processed as if you called
 single instances of stapler.
+
+### info:
+Shows information on the metadata stored inside a PDF file.
+
+Syntax:
+
+    stapler info foo.pdf
+
+Example output:
