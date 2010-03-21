@@ -88,3 +88,13 @@ Syntax:
     stapler info foo.pdf
 
 Example output:
+    *** Metadata for Vollmacht f. C3.pdf
+
+    /ModDate:  D:20100313082451+01'00'
+    /CreationDate:  D:20100313082451+01'00'
+    /Producer:  GPL Ghostscript 8.70
+    /Title:  foo.pdf
+    /Creator:  PDFCreator Version 0.9.9
+    /Keywords:  
+    /Author:  John Doe
+    /Subject:  
