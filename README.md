@@ -31,7 +31,7 @@ Stapler version 0.3 was written in 2010 by Fred Wenzel.
 
 For a list of contributors, check the ``CONTRIBUTORS`` file.
 
-Stapler is distributed under a BSD license. A copy of the BSD Style 
+Stapler is distributed under a BSD license. A copy of the BSD Style
 License used can be found in the file ``LICENSE``.
 
 Usage
@@ -39,7 +39,7 @@ Usage
 There are the following modes in Stapler:
 
 ### select/delete (called with ``sel`` and ``del``, respectively)
-With select, you can cherry-pick pages from pdfs and concatenate them into 
+With select, you can cherry-pick pages from pdfs and concatenate them into
 a new pdf file.
 
 Syntax:
@@ -88,13 +88,13 @@ Syntax:
     stapler info foo.pdf
 
 Example output:
-    *** Metadata for Vollmacht f. C3.pdf
+    *** Metadata for foo.pdf
 
     /ModDate:  D:20100313082451+01'00'
     /CreationDate:  D:20100313082451+01'00'
     /Producer:  GPL Ghostscript 8.70
     /Title:  foo.pdf
     /Creator:  PDFCreator Version 0.9.9
-    /Keywords:  
+    /Keywords:
     /Author:  John Doe
-    /Subject:  
+    /Subject:
