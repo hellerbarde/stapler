@@ -75,7 +75,7 @@ def split(args):
     inputs = []
     try:
         for f in files:
-            inputs.append(iohelper.read_pdf(i))
+            inputs.append(iohelper.read_pdf(f))
     except Exception, e:
         raise CommandError(e)
 
