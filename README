@@ -76,3 +76,21 @@ There are 4 modes in Stapler:
 
 contact me if you have questions about usage or anything, really :)
 2009, Philip Stark (heller <dot> barde <at> gmail <dot> com)
+
+---------------------------------------------------------------
+
+Two modes added to facilitate concatenating slides and lecture notes:
+
+ - cate4:
+    Works just like "cat", but make sure each input file takes an even number of 
+    pages in the output file by adding empty pages. The size of the added empty 
+    pages are all A4.
+
+ - catel:
+    Works just like "cate4", except the size of the added empty pages are all 
+    US letter.
+
+The empty pages are generated using reportlab library.
+
+Contact me if any problem about usage or copyright.
+2010, Cyker Way (cykerway <at> gmail <dot> com)
