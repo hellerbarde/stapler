@@ -2,6 +2,7 @@
 
 import math
 import os.path
+import os
 
 from pyPdf import PdfFileWriter, PdfFileReader
 
@@ -54,7 +55,7 @@ def select(args, inverse=False):
     except Exception, e:
         raise CommandError(e)
 
-    iohelper.write_pdf(output, outputfilename)
+    iohelper.write_pdf(output, staplelib.OPTIONS.destdir + os.sep + outputfilename)
 
 
 def delete(args):
@@ -97,7 +98,7 @@ def split(args):
             outputname = output_template % (pageno+1)
             if verbose:
                 print outputname
-            iohelper.write_pdf(output, outputname)
+            iohelper.write_pdf(output, staplelib.OPTIONS.destdir + os.sep + outputname)
 
             pagecount += 1
         filecount += 1
