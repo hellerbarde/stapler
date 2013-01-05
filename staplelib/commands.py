@@ -55,7 +55,10 @@ def select(args, inverse=False):
     except Exception, e:
         raise CommandError(e)
 
-    iohelper.write_pdf(output, staplelib.OPTIONS.destdir + os.sep + outputfilename)
+    if os.path.isabs(outputfilename) :
+        iohelper.write_pdf(output, outputfilename)
+    else :
+        iohelper.write_pdf(output, staplelib.OPTIONS.destdir + os.sep + outputfilename)
 
 
 def delete(args):
@@ -99,7 +102,7 @@ def split(args):
             if verbose:
                 print outputname
             iohelper.write_pdf(output, staplelib.OPTIONS.destdir + os.sep + outputname)
-
+            
             pagecount += 1
         filecount += 1
 

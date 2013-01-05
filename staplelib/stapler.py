@@ -47,7 +47,7 @@ parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
 
 ## directory where to store output files
 ## added by esantoro on 05/01/2013
-parser.add_option('-d', '--destdir', dest="destdir", default=".",
+parser.add_option('-d', '--destdir', dest="destdir", default="."+os.sep,
                   help="directory where to store output file",)
 
 
