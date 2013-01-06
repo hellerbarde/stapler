@@ -3,7 +3,7 @@
 """Main stapler dispatcher."""
 
 from optparse import OptionParser
-import sys
+import os, sys
 
 from . import commands, CommandError
 import staplelib
@@ -44,6 +44,9 @@ parser.add_option('-u', '--userpw', action='store', dest='userpw',
                   default=None)
 parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                   default=False)
+parser.add_option('-d', '--destdir', dest="destdir", default="."+os.sep,
+                  help="directory where to store output file",)
+
 
 def main():
     """
@@ -51,6 +54,9 @@ def main():
     commands.
     """
     (staplelib.OPTIONS, args) = parser.parse_args()
+
+    if not os.path.exists(staplelib.OPTIONS.destdir) :
+        print_error("cannot find output directory named %s" % staplelib.OPTIONS.destdir)
 
     if (len(args) < 2):
         print_error("Not enough arguments", show_usage=True)
