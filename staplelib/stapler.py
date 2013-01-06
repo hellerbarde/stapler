@@ -44,9 +44,6 @@ parser.add_option('-u', '--userpw', action='store', dest='userpw',
                   default=None)
 parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                   default=False)
-
-## directory where to store output files
-## added by esantoro on 05/01/2013
 parser.add_option('-d', '--destdir', dest="destdir", default="."+os.sep,
                   help="directory where to store output file",)
 
