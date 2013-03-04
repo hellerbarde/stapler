@@ -5,3 +5,7 @@ class CommandError(Exception):
     pass
 
 OPTIONS = None # optparse options
+
+def main():
+    import stapler
+    stapler.main()
