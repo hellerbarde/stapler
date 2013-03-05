@@ -89,7 +89,8 @@ def parse_ranges(files_and_ranges):
                                "pdf": read_pdf(inputname),
                                "pages": []})
         else:
-            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)', inputname)
+            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)',
+                                inputname)
             if not match:
                 raise CommandError('Invalid range: %s' % inputname)
 
@@ -110,9 +111,9 @@ def parse_ranges(files_and_ranges):
 
             # negative ranges sort pages backwards
             if begin < end:
-                pagerange = range(begin, end+1)
+                pagerange = range(begin, end + 1)
             else:
-                pagerange = range(end, begin+1)[::-1]
+                pagerange = range(end, begin + 1)[::-1]
 
             for p in pagerange:
                 current['pages'].append((p, rotate))
