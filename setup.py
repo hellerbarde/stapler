@@ -24,4 +24,3 @@ setup(name='stapler',
     stapler = staplelib:main
     """,
     )
-
