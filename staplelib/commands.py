@@ -46,13 +46,14 @@ def select(args, inverse=False):
             for pageno, rotate in pagerange:
                 if 1 <= pageno <= pdf.getNumPages():
                     if verbose:
-                        print "Using page: %d (rotation: %d deg.)" % \
-                              (pageno, rotate)
-                    output.addPage(pdf.getPage(
-                                            pageno-1).rotateClockwise(rotate))
+                        print "Using page: {} (rotation: {} deg.)".format(
+                            pageno, rotate)
+                    
+                    output.addPage(pdf.getPage(pageno-1)
+                                   .rotateClockwise(rotate))
                 else:
-                    raise CommandError(
-                        "Page %d not found in %s." % (pageno, input['name']))
+                    raise CommandError("Page {} not found in {}.".format(
+                        pageno, input['name']))
 
     except Exception, e:
         raise CommandError(e)
@@ -60,8 +61,8 @@ def select(args, inverse=False):
     if os.path.isabs(outputfilename):
         iohelper.write_pdf(output, outputfilename)
     else:
-        iohelper.write_pdf(output, staplelib.OPTIONS.destdir + \
-                                    os.sep + outputfilename)
+        iohelper.write_pdf(output, staplelib.OPTIONS.destdir + 
+                           os.sep + outputfilename)
 
 
 def delete(args):
@@ -92,9 +93,13 @@ def split(args):
         # zero-padded output file name
         (base, ext) = os.path.splitext(os.path.basename(files[filecount]))
         output_template = ''.join([
-            base, '_',
-            '%0', str(math.ceil(math.log10(input.getNumPages()))), 'd',
-            ext])
+            base, 
+            '_',
+            '%0', 
+            str(math.ceil(math.log10(input.getNumPages()))), 
+            'd',
+            ext
+        ])
 
         for pageno in range(input.getNumPages()):
             output = PdfFileWriter()
@@ -103,14 +108,14 @@ def split(args):
             outputname = output_template % (pageno + 1)
             if verbose:
                 print outputname
-            iohelper.write_pdf(output, staplelib.OPTIONS.destdir + \
-                                os.sep + outputname)
+            iohelper.write_pdf(output, staplelib.OPTIONS.destdir + 
+                               os.sep + outputname)
             pagecount += 1
         filecount += 1
 
     if verbose:
-        print
-        print "%d page(s) in %d file(s) processed." % (pagecount, filecount)
+        print "\n{} page(s) in {} file(s) processed.".format(
+            pagecount, filecount)
 
 
 def info(args):
@@ -122,12 +127,12 @@ def info(args):
 
     for f in files:
         pdf = iohelper.read_pdf(f)
-        print "*** Metadata for %s" % f
+        print "*** Metadata for {}".format(f)
         print
         info = pdf.documentInfo
         if info:
             for name, value in info.items():
-                print "    %s:  %s" % (name, value)
+                print "    {}:  {}".format(name, value)
         else:
             print "    (No metadata found.)"
         print

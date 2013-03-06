@@ -23,4 +23,4 @@ setup(name='stapler',
     [console_scripts]
     stapler = staplelib:main
     """,
-    )
+)

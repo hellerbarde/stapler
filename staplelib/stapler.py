@@ -57,8 +57,8 @@ def main():
     (staplelib.OPTIONS, args) = parser.parse_args()
 
     if not os.path.exists(staplelib.OPTIONS.destdir):
-        print_error("cannot find output directory named %s" % \
-                        staplelib.OPTIONS.destdir)
+        print_error("cannot find output directory named {}".format(
+                    staplelib.OPTIONS.destdir))
 
     if (len(args) < 2):
         print_error("Not enough arguments", show_usage=True)
@@ -89,9 +89,9 @@ def main():
 
 def print_error(msg, code=1, show_usage=False):
     """Pretty-print an error to the user."""
-    sys.stderr.write(str('Error: %s\n' % msg))
+    sys.stderr.write(str('Error: {}\n'.format(msg)))
 
     if show_usage:
-        sys.stderr.write("\n%s\n" % parser.get_usage())
+        sys.stderr.write("\n{}\n".format(parser.get_usage()))
 
     sys.exit(code)

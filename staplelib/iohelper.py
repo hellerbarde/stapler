@@ -24,7 +24,7 @@ ROTATIONS = {'u': ROTATION_NONE,
 def read_pdf(filename):
     """Open a PDF file with pyPdf."""
     if not os.path.exists(filename):
-        raise CommandError("%s does not exist" % filename)
+        raise CommandError("{} does not exist".format(filename))
     pdf = PdfFileReader(file(filename, "rb"))
     if pdf.isEncrypted:
         while True:
@@ -40,7 +40,7 @@ def read_pdf(filename):
 def write_pdf(pdf, filename):
     """Write the content of a PdfFileWriter object to a file."""
     if os.path.exists(filename):
-        raise CommandError("File already exists: %s" % filename)
+        raise CommandError("File already exists: {}".format(filename))
 
     opt = staplelib.OPTIONS
     if opt:
@@ -54,7 +54,7 @@ def write_pdf(pdf, filename):
 
 def prompt_for_pw(filename):
     """Prompt the user for the password to access an input file."""
-    print 'Please enter a password to decrypt %s.' % filename
+    print 'Please enter a password to decrypt {}.'.format(filename)
     print '(The password will not be shown. Press ^C to cancel).'
 
     try:
@@ -69,14 +69,14 @@ def check_input_files(files):
 
     for filename in files:
         if not os.path.exists(filename):
-            raise CommandError("%s does not exist" % filename)
+            raise CommandError("{} does not exist".format(filename))
 
 
 def check_output_file(filename):
     """Make sure the output file does not exist."""
 
     if os.path.exists(filename):
-        raise CommandError("File already exists: %s" % filename)
+        raise CommandError("File already exists: {}".format(filename))
 
 
 def parse_ranges(files_and_ranges):
@@ -92,7 +92,7 @@ def parse_ranges(files_and_ranges):
             match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)',
                                 inputname)
             if not match:
-                raise CommandError('Invalid range: %s' % inputname)
+                raise CommandError('Invalid range: {}'.format(inputname))
 
             current = operations[-1]
             max_page = current['pdf'].getNumPages()
@@ -106,7 +106,8 @@ def parse_ranges(files_and_ranges):
 
             if begin > max_page or end > max_page:
                 raise CommandError(
-                    'Range %s-%s exceeds maximum page number %s of file %s' % (
+                    "Range {}-{} exceeds maximum page number "
+                    "{} of file {}".format(
                         begin, end, max_page, current['name']))
 
             # negative ranges sort pages backwards
