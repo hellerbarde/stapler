@@ -17,7 +17,7 @@ setup(name='stapler',
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'pypdf == 1.12',
+        'PyPDF2',
     ],
     entry_points="""
     [console_scripts]

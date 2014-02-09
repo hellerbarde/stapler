@@ -5,7 +5,7 @@ import os.path
 import re
 import sys
 
-from pyPdf import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfFileWriter, PdfFileReader
 
 from . import CommandError
 import staplelib
@@ -22,7 +22,7 @@ ROTATIONS = {'u': ROTATION_NONE,
 
 
 def read_pdf(filename):
-    """Open a PDF file with pyPdf."""
+    """Open a PDF file with PyPDF2."""
     if not os.path.exists(filename):
         raise CommandError("{} does not exist".format(filename))
     pdf = PdfFileReader(file(filename, "rb"))

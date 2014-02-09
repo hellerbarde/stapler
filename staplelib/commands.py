@@ -4,7 +4,7 @@ import math
 import os.path
 import os
 
-from pyPdf import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfFileWriter, PdfFileReader
 
 from . import CommandError, iohelper
 import staplelib
