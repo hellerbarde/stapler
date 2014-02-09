@@ -132,7 +132,7 @@ def info(args):
         info = pdf.documentInfo
         if info:
             for name, value in info.items():
-                print "    {}:  {}".format(name, value)
+                print u"    {}:  {}".format(name, value)
         else:
             print "    (No metadata found.)"
         print
