@@ -8,10 +8,9 @@ PDF documents from the command line.
 
 History
 -------
-PDFtk was written in Java and C++, and
-is natively compiled with gcj. Sadly, it has been discontinued a few years ago
-and bitrot is setting in (e.g., it does not compile easily on a number of
-platforms).
+PDFtk was written in Java and C++, and is natively compiled with gcj. Sadly,
+it has been discontinued a few years ago and bitrot is setting in (e.g.,
+it does not compile easily on a number of platforms).
 
 Philip Stark decided to look for an alternative and found pypdf, a PDF library
 written in pure Python. He couldn't find a tool which actually used the
@@ -27,7 +26,7 @@ feel free to fork and send me a pull request.
 License
 -------
 Stapler version 0.2 was written in 2009 by Philip Stark.
-Stapler version 0.3 was written in 2010 by Fred Wenzel.
+Stapler version 0.3 and later were written from 2010--today by Fred Wenzel.
 
 For a list of contributors, check the ``CONTRIBUTORS`` file.
 

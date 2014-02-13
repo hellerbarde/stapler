@@ -34,6 +34,7 @@ Extended page range options:
         respectively. (e.g., 1-15R)
 """.strip()
 
+
 # command line option parser
 parser = OptionParser(usage=USAGE)
 parser.add_option('-o', '--ownerpw', action='store', dest='ownerpw',
@@ -44,6 +45,7 @@ parser.add_option('-u', '--userpw', action='store', dest='userpw',
                   default=None)
 parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                   default=False)
+
 
 def main():
     """
