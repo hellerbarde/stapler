@@ -1,6 +1,7 @@
 """Helper functions for user-supplied arguments and file I/O."""
 
 import getpass
+import glob
 import os.path
 import re
 import sys
@@ -64,12 +65,19 @@ def prompt_for_pw(filename):
         sys.exit(2)
 
 
-def check_input_files(files):
-    """Make sure all input files exist."""
+def expand_input_files(arglist):
+    """Expand (glob) input files if necessary, and ensure they all exist."""
+    # Expand all files in input list, don't retain empty results
+    files = []
+    for fs in filter(None, (glob.glob(arg) for arg in arglist)):
+        for f in fs:
+            files.append(f)
 
     for filename in files:
         if not os.path.exists(filename):
             raise CommandError("%s does not exist" % filename)
+
+    return files
 
 
 def check_output_file(filename):
@@ -85,9 +93,11 @@ def parse_ranges(files_and_ranges):
     operations = []
     for inputname in files_and_ranges:
         if inputname.lower().endswith('.pdf'):
-            operations.append({"name": inputname,
-                               "pdf": read_pdf(inputname),
-                               "pages": []})
+            filenames = expand_input_files((inputname,))  # Expand expects arg tuple.
+            for filename in filenames:
+                operations.append({"name": filename,
+                                   "pdf": read_pdf(filename),
+                                   "pages": []})
         else:
             match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)', inputname)
             if not match:

@@ -36,6 +36,13 @@ class TestStapler(unittest.TestCase):
         pdf = PdfFileReader(file(self.outputfile, 'rb'))
         self.assertEqual(pdf.getNumPages(), 6)
 
+    def test_cat_glob(self):
+        """Make sure wildcard inputs work."""
+        check_call([STAPLER, 'cat', os.path.join(TESTFILE_DIR, '*.pdf'),
+                    self.outputfile])
+        pdf = PdfFileReader(file(self.outputfile, 'rb'))
+        self.assertEqual(pdf.getNumPages(), 6)
+
     def test_split(self):
         """Make sure a file is properly split into pages."""
         check_call([STAPLER, 'split', FIVEPAGE_PDF])
