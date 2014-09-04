@@ -21,6 +21,8 @@ del: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Select all but the given pages/ranges from input files.
 burst/split: <inputfile> ... (no output needed)
     Create one file per page in input pdf files (no output needed)
+zip: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+    Merge/Collate the given input files interleaved.
 info: <inputfile> ... (no output needed)
     Display PDF metadata
 
@@ -70,6 +72,7 @@ def main():
         "burst": commands.split,
         "del": commands.delete,
         "info": commands.info,
+        "zip": commands.zip,
     }
 
     mode = args[0]
