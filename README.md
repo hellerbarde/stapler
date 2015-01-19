@@ -80,6 +80,26 @@ Example for a file foobar.pdf with 20 pages:
 Multiple files can be specified, they will be processed as if you called
 single instances of stapler.
 
+### zip:
+With zip, you can cherry-pick pages from pdfs (like select). The pages from
+each pdf are merged together in an interleaving manner. This can be used to
+collate a pdf with odd pages and a pdf with even pages into a single file.
+
+Syntax:
+    stapler zip input1 [range[rotation]] [range ...] [input2 [range...] ...] out
+
+Examples:
+
+    # combine a pdf with odd pages and a pdf with even pages into output.pdf
+    stapler zip odd.pdf even.pdf output.pdf
+
+    # combine a.pdf b.pdf and c.pdf, but use only some pages of c.pdf
+    stapler zip a.pdf b.pdf c.pdf 1-3 output.pdf
+
+If one of the ranges is shorter than the others, stapler will continue to merge
+the remaining pages.
+
+
 ### info:
 Shows information on the metadata stored inside a PDF file.
 
