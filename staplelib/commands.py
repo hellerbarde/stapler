@@ -5,7 +5,7 @@ import os.path
 import os
 import itertools
 
-from pyPdf import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfFileWriter, PdfFileReader
 
 from . import CommandError, iohelper
 import staplelib
@@ -197,7 +197,7 @@ def info(args):
         info = pdf.documentInfo
         if info:
             for name, value in info.items():
-                print "    {}:  {}".format(name, value)
+                print u"    {}:  {}".format(name, value)
         else:
             print "    (No metadata found.)"
         print

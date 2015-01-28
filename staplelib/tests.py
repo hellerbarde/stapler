@@ -6,7 +6,7 @@ from subprocess import check_call
 import tempfile
 import unittest
 
-from pyPdf import PdfFileReader
+from PyPDF2 import PdfFileReader
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
