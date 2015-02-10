@@ -1,7 +1,5 @@
 """Module containing the actual commands stapler understands."""
-import itertools
 import math
-import os.path
 import os
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
