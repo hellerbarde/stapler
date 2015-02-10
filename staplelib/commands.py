@@ -1,80 +1,15 @@
 """Module containing the actual commands stapler understands."""
-import itertools
 import math
-import os.path
 import os
 
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except:
     from pyPdf import PdfFileWriter, PdfFileReader
+import more_itertools
 
 from . import CommandError, iohelper
 import staplelib
-
-
-def roundrobinLIST(iterables):
-    """roundrobinLIST(['ABC', 'D', 'EF']) --> A D E B F C"""
-    # Recipe credited to George Sakkis
-    pending = len(iterables)
-    nexts = itertools.cycle(iter(it).next for it in iterables)
-    while pending:
-        try:
-            for next in nexts:
-                yield next()
-        except StopIteration:
-            pending -= 1
-            nexts = itertools.cycle(itertools.islice(nexts, pending))
-
-
-def zip(args):
-    """Combine 2 files with interleaved pages."""
-
-    filesandranges = iohelper.parse_ranges(args[:-1])
-    outputfilename = args[-1]
-    verbose = staplelib.OPTIONS.verbose
-
-    if not filesandranges or not outputfilename:
-        raise CommandError("Both input and output filenames are required.")
-
-    try:
-        filestozip = []
-        for input in filesandranges:
-            pdf = input['pdf']
-            if verbose:
-                print input['name']
-
-            # empty range means "include all pages"
-            pagerange = input['pages'] or [
-                (p, iohelper.ROTATION_NONE) for p in
-                range(1, pdf.getNumPages() + 1)]
-
-            pagestozip = []
-            for pageno, rotate in pagerange:
-                if 1 <= pageno <= pdf.getNumPages():
-                    if verbose:
-                        print "Using page: {} (rotation: {} deg.)".format(
-                            pageno, rotate)
-
-                    pagestozip.append(pdf.getPage(pageno-1)
-                                   .rotateClockwise(rotate))
-                else:
-                    raise CommandError("Page {} not found in {}.".format(
-                        pageno, input['name']))
-            filestozip.append(pagestozip)
-
-        output = PdfFileWriter()
-        for page in list(roundrobinLIST(filestozip)):
-            output.addPage(page)
-
-    except Exception, e:
-        raise CommandError(e)
-
-    if os.path.isabs(outputfilename):
-        iohelper.write_pdf(output, outputfilename)
-    else:
-        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
-                           os.sep + outputfilename)
 
 
 def select(args, inverse=False):
@@ -134,13 +69,11 @@ def select(args, inverse=False):
 
 def delete(args):
     """Concatenate files and remove pages from files."""
-
     return select(args, inverse=True)
 
 
 def split(args):
     """Burst an input file into one file per page."""
-
     files = args
     verbose = staplelib.OPTIONS.verbose
 
@@ -203,3 +136,50 @@ def info(args):
         else:
             print "    (No metadata found.)"
         print
+
+
+def zip(args):
+    """Combine 2 files with interleaved pages."""
+    filesandranges = iohelper.parse_ranges(args[:-1])
+    outputfilename = args[-1]
+    verbose = staplelib.OPTIONS.verbose
+
+    if not filesandranges or not outputfilename:
+        raise CommandError('Both input and output filenames are required.')
+
+    # Make [[file1_p1, file1_p2], [file2_p1, file2_p2], ...].
+    filestozip = []
+    for input in filesandranges:
+        pdf = input['pdf']
+        if verbose:
+            print input['name']
+
+        # Empty range means "include all pages".
+        pagerange = input['pages'] or [
+            (p, iohelper.ROTATION_NONE) for p in
+            range(1, pdf.getNumPages() + 1)]
+
+        pagestozip = []
+        for pageno, rotate in pagerange:
+            if 1 <= pageno <= pdf.getNumPages():
+                if verbose:
+                    print "Using page: {} (rotation: {} deg.)".format(
+                        pageno, rotate)
+
+                pagestozip.append(
+                    pdf.getPage(pageno - 1).rotateClockwise(rotate))
+            else:
+                raise CommandError("Page {} not found in {}.".format(
+                    pageno, input['name']))
+        filestozip.append(pagestozip)
+
+    # Interweave pages.
+    output = PdfFileWriter()
+    for page in more_itertools.roundrobin(*filestozip):
+        output.addPage(page)
+
+    if os.path.isabs(outputfilename):
+        iohelper.write_pdf(output, outputfilename)
+    else:
+        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
+                           os.sep + outputfilename)

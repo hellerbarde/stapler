@@ -12,7 +12,8 @@ setup(name="stapler",
     url="https://github.com/hellerbarde/stapler",
 
     install_requires = [
-        "PyPDF2>=1.24"
+        "PyPDF2>=1.24",
+        "more-itertools>=2.2"
     ],
 
     #include_package_data=True,
