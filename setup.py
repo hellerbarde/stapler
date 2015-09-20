@@ -27,7 +27,7 @@ setup(name="stapler",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 2",
-        "Intended Audience :: Users",
+        "Intended Audience :: Science/Research",
         "Topic :: Utilities",
         "License :: OSI Approved :: BSD License"
     ],
