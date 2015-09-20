@@ -1,6 +1,7 @@
 Comparison with pdftk features:
 [x] = done, [?] = maybe, [ ] = to do
 
+[ ] Python 3 Support (pypdf can do it, I think)
 [x] Merge PDF Documents
 [x] Split PDF Pages into a New Document
 [x] Rotate PDF Pages or Documents

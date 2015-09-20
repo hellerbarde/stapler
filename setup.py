@@ -1,26 +1,34 @@
 from setuptools import setup, find_packages
 
-version = '0.3.0'
+version = "0.3.1"
 
-setup(name='stapler',
-    description="Manipulate PDF documents from the command line",
-    classifiers=[
-        "Programming Language :: Python :: 2",
-        "Topic :: Utilities",
-    ],
-    keywords='pdf stapler cli',
+setup(name="stapler",
     version=version,
-    license='BSD',
-    author='Fred Wenzel, Philip Stark',
-    url='https://github.com/hellerbarde/stapler',
-    packages=find_packages(),
-    include_package_data=True,
-    zip_safe=False,
-    install_requires=[
-        'PyPDF2',
+    description="Manipulate PDF documents from the command line",
+    keywords="pdf utility cli concatenate tool",
+    
+    author="Philip Stark, Fred Wenzel",
+    author_email="git@codechaos.ch",
+    url="https://github.com/hellerbarde/stapler",
+
+    install_requires = [
+        "PyPDF2==1.25.1"
     ],
+
+    #include_package_data=True,
+    packages=find_packages(),
+    package_data={"": ["LICENSE", "CONTRIBUTORS", "README.md", ]},
     entry_points="""
     [console_scripts]
     stapler = staplelib:main
+    pdf-stapler = staplelib:main
     """,
+
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python :: 2",
+        "Intended Audience :: Users",
+        "Topic :: Utilities",
+        "License :: OSI Approved :: BSD License"
+    ],
 )

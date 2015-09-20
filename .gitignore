@@ -3,3 +3,5 @@ pip-log.txt
 build
 dist
 *egg-info*
+/venv
+/.idea
