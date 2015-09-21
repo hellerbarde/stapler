@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = "0.3.2"
+version = "0.3.3"
 
 setup(name="stapler",
     version=version,
@@ -12,7 +12,7 @@ setup(name="stapler",
     url="https://github.com/hellerbarde/stapler",
 
     install_requires = [
-        "PyPDF2==1.25.1"
+        "PyPDF2>=1.24"
     ],
 
     #include_package_data=True,
