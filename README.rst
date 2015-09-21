@@ -16,20 +16,34 @@ Philip Stark decided to look for an alternative and found pypdf, a PDF
 library written in pure Python. He couldn't find a tool which actually
 used the library, so he started writing his own.
 
-Version 0.3 of stapler was completely refactored by Fred Wenzel. He also 
+Version 0.3 of stapler was completely refactored by Fred Wenzel. He also
 added tests and awesome functionality.
 
 Like pdftk, stapler is a command-line tool. If you would like to add a
 GUI, compile it into a binary for your favorite platform, or contribute
 anything else, feel free to fork and send a pull request.
 
-License
--------
+Contributors and Authorship
+---------------------------
 
 Stapler version 0.2 was written in 2009 by Philip Stark. Stapler version
 0.3 was written in 2010 by Fred Wenzel.
 
 For a list of contributors, check the ``CONTRIBUTORS`` file.
+
+Change log (sorta)
+------------------
+
+- **0.3.3** include try-except blocks for supporting legacy pyPdf
+  if needed. Also fixes some PyPI issues like the missing License Trove
+  classifier and some dependencies.
+
+- **0.3.0** Refactoring by Fred Wenzel and now using PyPDF2
+
+- **0.2.0** Feature completeness using original pyPdf
+
+License
+-------
 
 Stapler is distributed under a BSD license. A copy of the BSD Style
 License used can be found in the file ``LICENSE``.
@@ -42,7 +56,7 @@ There are the following modes in Stapler:
 select/delete (called with ``sel`` and ``del``, respectively)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``sel`` is also available as ``cat`` for compatibility with my 
+``sel`` is also available as ``cat`` for compatibility with my
 personal muscle memory. :)
 
 With select, you can cherry-pick pages from pdfs and concatenate them
