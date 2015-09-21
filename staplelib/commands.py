@@ -5,7 +5,10 @@ import os.path
 import os
 import itertools
 
-from PyPDF2 import PdfFileWriter, PdfFileReader
+try:
+    from PyPDF2 import PdfFileWriter, PdfFileReader
+except:
+    from pyPdf import PdfFileWriter, PdfFileReader
 
 from . import CommandError, iohelper
 import staplelib

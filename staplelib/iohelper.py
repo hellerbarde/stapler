@@ -5,7 +5,11 @@ import os.path
 import re
 import sys
 
-from PyPDF2 import PdfFileWriter, PdfFileReader
+try:
+    from PyPDF2 import PdfFileWriter, PdfFileReader
+except ImportError:
+    from pyPdf import PdfFileWriter, PdfFileReader
+
 
 from . import CommandError
 import staplelib
