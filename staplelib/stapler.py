@@ -14,7 +14,7 @@ USAGE = """
 usage: %prog [options] mode input.pdf ... [output.pdf]
 
 Modes:
-cat/sel: <inputfile> [<pagerange>] ... (output needed)
+cat/sel: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Select the given pages/ranges from input files.
     No range means all pages.
 del: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
