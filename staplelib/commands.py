@@ -1,9 +1,8 @@
 """Module containing the actual commands stapler understands."""
-
+import itertools
 import math
 import os.path
 import os
-import itertools
 
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
@@ -15,7 +14,7 @@ import staplelib
 
 
 def roundrobinLIST(iterables):
-    "roundrobinLIST(['ABC', 'D', 'EF']) --> A D E B F C"
+    """roundrobinLIST(['ABC', 'D', 'EF']) --> A D E B F C"""
     # Recipe credited to George Sakkis
     pending = len(iterables)
     nexts = itertools.cycle(iter(it).next for it in iterables)
@@ -116,7 +115,7 @@ def select(args, inverse=False):
                     if verbose:
                         print "Using page: {} (rotation: {} deg.)".format(
                             pageno, rotate)
-                    
+
                     output.addPage(pdf.getPage(pageno-1)
                                    .rotateClockwise(rotate))
                 else:
@@ -129,7 +128,7 @@ def select(args, inverse=False):
     if os.path.isabs(outputfilename):
         iohelper.write_pdf(output, outputfilename)
     else:
-        iohelper.write_pdf(output, staplelib.OPTIONS.destdir + 
+        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
                            os.sep + outputfilename)
 
 
@@ -161,10 +160,10 @@ def split(args):
         # zero-padded output file name
         (base, ext) = os.path.splitext(os.path.basename(files[filecount]))
         output_template = ''.join([
-            base, 
+            base,
             '_',
-            '%0', 
-            str(math.ceil(math.log10(input.getNumPages()))), 
+            '%0',
+            str(math.ceil(math.log10(input.getNumPages()))),
             'd',
             ext
         ])
@@ -176,7 +175,7 @@ def split(args):
             outputname = output_template % (pageno + 1)
             if verbose:
                 print outputname
-            iohelper.write_pdf(output, staplelib.OPTIONS.destdir + 
+            iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
                                os.sep + outputname)
             pagecount += 1
         filecount += 1
