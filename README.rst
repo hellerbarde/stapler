@@ -76,7 +76,8 @@ Examples:
     stapler sel a.pdf b.pdf output.pdf
 
     # generate a pdf file called output.pdf with the following pages:
-    # 1, 4-8 in 180°, 20-40 from a.pdf, 1-5 from b.pdf in this order
+    # 1, 4-8 in 180° (D for down), 20-40 from a.pdf, 1-5 from b.pdf in 
+    # this order
     stapler sel a.pdf 1 4-8D 20-40 b.pdf 1-5 output.pdf
 
     # reverse some of the pages in a.pdf by specifying a negative range
@@ -131,7 +132,8 @@ Examples:
     stapler zip odd.pdf even.pdf output.pdf
 
     # combine a.pdf b.pdf and c.pdf, but use only some pages of c.pdf and
-    #  rotate b.pdf right (90° clockwise)
+    #  rotate b.pdf right (90° clockwise) and rotate c.pdf left (90° counter-
+    # clockwise)
     stapler zip a.pdf b.pdf 1-endR c.pdf 1-3L output.pdf
 
 If one of the ranges is shorter than the others, stapler will continue
