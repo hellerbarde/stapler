@@ -84,12 +84,12 @@ def main():
         print_error('Please enter a valid mode', show_usage=True)
 
     if staplelib.OPTIONS.verbose:
-        print "Mode: %s" % mode
+        print("Mode: %s" % mode)
 
     # dispatch call to known subcommand
     try:
         modes[mode](args)
-    except CommandError, e:
+    except CommandError as e:
         print_error(e)
 
 

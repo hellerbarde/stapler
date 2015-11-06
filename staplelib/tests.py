@@ -35,9 +35,10 @@ class TestStapler(unittest.TestCase):
         """Make sure files are properly concatenated."""
         check_call([STAPLER, 'cat', ONEPAGE_PDF, FIVEPAGE_PDF,
                     self.outputfile])
-        self.assert_(os.path.isfile(self.outputfile))
-        pdf = PdfFileReader(file(self.outputfile, 'rb'))
-        self.assertEqual(pdf.getNumPages(), 6)
+        self.assertTrue(os.path.isfile(self.outputfile))
+        with open(self.outputfile, 'rb') as fh:
+            pdf = PdfFileReader(fh)
+            self.assertEqual(pdf.getNumPages(), 6)
 
     def test_split(self):
         """Make sure a file is properly split into pages."""
@@ -46,8 +47,9 @@ class TestStapler(unittest.TestCase):
         filelist = os.listdir(self.tmpdir)
         self.assertEqual(len(filelist), 5)
         for f in os.listdir(self.tmpdir):
-            pdf = PdfFileReader(file(os.path.join(self.tmpdir, f), 'rb'))
-            self.assertEqual(pdf.getNumPages(), 1)
+            with open(os.path.join(self.tmpdir, f), 'rb') as fh:
+                pdf = PdfFileReader(fh)
+                self.assertEqual(pdf.getNumPages(), 1)
 
 
 if __name__ == '__main__':
