@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Stapler is a pure-python tool for modifying PDF files."""
+
+from staplelib import stapler
+
+
+__author__ = 'Philip Stark, Fred Wenzel'
+__license__ = 'BSD'
+VERSION = (0, 3, 3)
+__version__ = '.'.join(map(str, VERSION))
+
+
+if __name__ == '__main__':
+    stapler.main()

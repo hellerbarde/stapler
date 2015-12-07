@@ -1,0 +1,7 @@
+*.py[co]
+pip-log.txt
+build
+dist
+*egg-info*
+/venv
+/.idea
