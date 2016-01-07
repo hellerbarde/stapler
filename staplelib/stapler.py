@@ -23,6 +23,8 @@ burst/split: <inputfile> ... (no output needed)
     Create one file per page in input pdf files (no output needed)
 zip: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Merge/Collate the given input files interleaved.
+background: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+    Merge/Overlay the given input files interleaved.
 info: <inputfile> ... (no output needed)
     Display PDF metadata
 
@@ -73,6 +75,7 @@ def main():
         "del": commands.delete,
         "info": commands.info,
         "zip": commands.zip,
+        "background": commands.background,
     }
 
     mode = args[0]

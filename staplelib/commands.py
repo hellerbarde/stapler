@@ -6,7 +6,7 @@ try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except:
     from pyPdf import PdfFileWriter, PdfFileReader
-import more_itertools
+import itertools
 
 from . import CommandError, iohelper
 import staplelib
@@ -137,6 +137,60 @@ def info(args):
             print "    (No metadata found.)"
         print
 
+def background(args):
+    """Combine 2 files with corresponding pages merged."""
+
+    filesandranges = iohelper.parse_ranges(args[:-1])
+    outputfilename = args[-1]
+    verbose = staplelib.OPTIONS.verbose
+
+    if not filesandranges or not outputfilename:
+        raise CommandError("Both input and output filenames are required.")
+
+    try:
+        filestozip = []
+        for input in filesandranges:
+            pdf = input['pdf']
+            if verbose:
+                print input['name']
+
+            # empty range means "include all pages"
+            pagerange = input['pages'] or [
+                (p, iohelper.ROTATION_NONE) for p in
+                range(1, pdf.getNumPages() + 1)]
+
+            pagestozip = []
+            for pageno, rotate in pagerange:
+                if 1 <= pageno <= pdf.getNumPages():
+                    if verbose:
+                        print "Using page: {} (rotation: {} deg.)".format(
+                            pageno, rotate)
+
+                    pagestozip.append(pdf.getPage(pageno-1)
+                                   .rotateClockwise(rotate))
+                else:
+                    raise CommandError("Page {} not found in {}.".format(
+                        pageno, input['name']))
+            filestozip.append(pagestozip)
+
+        output = PdfFileWriter()
+        for pagelist in list(itertools.izip_longest(*filestozip)):
+            page = pagelist[0]
+            for p in pagelist[1:]:
+              if p: page.mergePage(p)
+            output.addPage(page)
+
+    except Exception, e:
+        import sys
+        import traceback
+        traceback.print_tb(sys.exc_info()[2])
+        raise CommandError(e)
+
+    if os.path.isabs(outputfilename):
+        iohelper.write_pdf(output, outputfilename)
+    else:
+        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
+                           os.sep + outputfilename)
 
 def zip(args):
     """Combine 2 files with interleaved pages."""
