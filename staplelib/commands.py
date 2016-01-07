@@ -177,7 +177,10 @@ def background(args):
         for pagelist in list(itertools.izip_longest(*filestozip)):
             page = pagelist[0]
             for p in pagelist[1:]:
-              if p: page.mergePage(p)
+              if not page:
+                page = p
+              elif p:
+                page.mergePage(p)
             output.addPage(page)
 
     except Exception, e:
