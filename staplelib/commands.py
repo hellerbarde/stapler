@@ -7,6 +7,7 @@ try:
 except:
     from pyPdf import PdfFileWriter, PdfFileReader
 import itertools
+import more_itertools
 
 from . import CommandError, iohelper
 import staplelib
