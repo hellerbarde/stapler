@@ -12,13 +12,14 @@ import more_itertools
 from . import CommandError, iohelper
 import staplelib
 
-
-def select(args, inverse=False):
+def select(args, inverse=False, even_page=False):
     """
     Concatenate files / select pages from files.
 
     inverse=True excludes rather than includes the selected pages from
     the file.
+    even_page=True inserts an empty page at the end of each input
+    file if it ends with an odd page number.
     """
 
     filesandranges = iohelper.parse_ranges(args[:-1])
@@ -29,6 +30,7 @@ def select(args, inverse=False):
         raise CommandError("Both input and output filenames are required.")
 
     output = PdfFileWriter()
+    pagecnt = 0
     try:
         for input in filesandranges:
             pdf = input['pdf']
@@ -52,11 +54,17 @@ def select(args, inverse=False):
                         print "Using page: {} (rotation: {} deg.)".format(
                             pageno, rotate)
 
-                    output.addPage(pdf.getPage(pageno-1)
-                                   .rotateClockwise(rotate))
+                    page = pdf.getPage(pageno-1)
+                    output.addPage(page.rotateClockwise(rotate))
+                    pagecnt += 1
                 else:
                     raise CommandError("Page {} not found in {}.".format(
                         pageno, input['name']))
+
+            if even_page:
+                if pagecnt % 2 == 1:
+                    output.addPage(iohelper.create_empty_page(page))
+                    pagecnt += 1
 
     except Exception, e:
         raise CommandError(e)
@@ -66,6 +74,16 @@ def select(args, inverse=False):
     else:
         iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
                            os.sep + outputfilename)
+
+def select_even(args, inverse=False):
+    """
+    Concatenate files / select pages from files.
+
+    Inserts an empty page at the end of each input file if it ends with
+    an odd page number.
+    """
+
+    select(args, inverse, True)
 
 
 def delete(args):

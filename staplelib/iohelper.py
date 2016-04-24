@@ -10,6 +10,9 @@ try:
 except ImportError:
     from pyPdf import PdfFileWriter, PdfFileReader
 
+from reportlab.lib import pagesizes
+from reportlab.pdfgen import canvas
+from StringIO import StringIO
 
 from . import CommandError
 import staplelib
@@ -124,3 +127,25 @@ def parse_ranges(files_and_ranges):
                 current['pages'].append((p, rotate))
 
     return operations
+
+
+def create_empty_page(refpage=None):
+    """Create an empty page with the same size as refpage."""
+
+    if refpage is not None:
+        pagesize = refpage.mediaBox[-2:]
+    else:
+        pagesize = pagesizes.letter
+
+    c = canvas.Canvas(None)
+    c.setPageSize(pagesize)
+    c.showPage()
+
+    buf = StringIO()
+    buf.write(c.getpdfdata())
+    buf.seek(0)
+
+    reader = PdfFileReader(buf)
+    return reader.getPage(0)
+
+

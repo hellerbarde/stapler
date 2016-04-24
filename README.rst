@@ -83,8 +83,16 @@ Examples:
     # reverse some of the pages in a.pdf by specifying a negative range
     stapler sel a.pdf 1-3 9-6 10 output.pdf
 
+The ``sele`` command is an extension of ``sel``. The usage is the same as that
+of ``sel``, but ``sele`` inserts an empty page after each input file if that
+input file has an odd number of pages so that each input file starts with an
+even page number in the generated output. The empty page shall have the same
+size as the page previous to it. You may find this mode useful if you read in
+double-page layout or if you want to print the concatenated output.
+
 The delete command works almost exactly the same as select, but inverse.
 It uses the pages and ranges which you *didn't* specify.
+
 
 split/burst:
 ~~~~~~~~~~~~
