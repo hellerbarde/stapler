@@ -16,7 +16,7 @@ setup(name="stapler",
         "more-itertools>=2.2"
     ],
 
-    #include_package_data=True,
+    include_package_data=True,
     packages=find_packages(),
     package_data={"": ["LICENSE", "CONTRIBUTORS", "README.md", ]},
     entry_points="""
