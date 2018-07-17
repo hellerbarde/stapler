@@ -100,6 +100,7 @@ def parse_ranges(files_and_ranges):
 
             current = operations[-1]
             max_page = current['pdf'].getNumPages()
+            step_size = 1
             # allow "end" as alias for the last page
             replace_end = lambda page: (
                 max_page if page.lower() == 'end' else int(page))
@@ -116,9 +117,9 @@ def parse_ranges(files_and_ranges):
 
             # negative ranges sort pages backwards
             if begin < end:
-                pagerange = range(begin, end + 1)
+                pagerange = range(begin, end + 1, step_size)
             else:
-                pagerange = range(end, begin + 1)[::-1]
+                pagerange = range(end, begin - 1, step_size * -1 )
 
             for p in pagerange:
                 current['pages'].append((p, rotate))
