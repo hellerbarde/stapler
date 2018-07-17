@@ -93,20 +93,33 @@ def parse_ranges(files_and_ranges):
                                "pdf": read_pdf(inputname),
                                "pages": []})
         else:
-            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)',
+            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?(even|odd)?([LRD]?)',
                                 inputname)
             if not match:
                 raise CommandError('Invalid range: {}'.format(inputname))
 
             current = operations[-1]
             max_page = current['pdf'].getNumPages()
+            step_size = 1
             # allow "end" as alias for the last page
             replace_end = lambda page: (
                 max_page if page.lower() == 'end' else int(page))
             begin = replace_end(match.group(1))
             end = replace_end(match.group(2)) if match.group(2) else begin
 
-            rotate = ROTATIONS.get((match.group(3) or 'u').lower())
+            page_subset = match.group(3) if match.group(3) else 'all'
+
+            begin_is_odd = False
+            if begin % 2 == 1:
+                begin_is_odd = True
+
+            if begin == end:
+                page_subset = 'all'
+
+            if page_subset == 'even' or page_subset == 'odd':
+                step_size = 2
+
+            rotate = ROTATIONS.get((match.group(4) or 'u').lower())
 
             if begin > max_page or end > max_page:
                 raise CommandError(
@@ -114,11 +127,20 @@ def parse_ranges(files_and_ranges):
                     "{} of file {}".format(
                         begin, end, max_page, current['name']))
 
-            # negative ranges sort pages backwards
-            if begin < end:
-                pagerange = range(begin, end + 1)
-            else:
-                pagerange = range(end, begin + 1)[::-1]
+            if begin == end:
+                pagerange = range(begin, end + 1, step_size)
+            elif begin < end:
+                if page_subset == 'even' and begin_is_odd == True:
+                    begin += 1
+                if page_subset == 'odd' and begin_is_odd == False:
+                    begin += 1
+                pagerange = range(begin, end + 1, step_size)
+            elif begin > end:
+                if page_subset == 'even' and begin_is_odd == True:
+                    begin -= 1
+                if page_subset == 'odd' and begin_is_odd == False:
+                    begin -= 1
+                pagerange = range(begin, end - 1, step_size * -1)
 
             for p in pagerange:
                 current['pages'].append((p, rotate))

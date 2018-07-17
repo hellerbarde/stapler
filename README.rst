@@ -83,6 +83,10 @@ Examples:
     # reverse some of the pages in a.pdf by specifying a negative range
     stapler sel a.pdf 1-3 9-6 10 output.pdf
 
+    # generate a pdf file called output.pdf with the following pages:
+    # 1,3,5,7,9 in 180° (D for down), 2,4,6,8,10 from a.pdf in this order
+    stapler sel a.pdf 1-10oddD 1-10even output.pdf
+
 The delete command works almost exactly the same as select, but inverse.
 It uses the pages and ranges which you *didn't* specify.
 
