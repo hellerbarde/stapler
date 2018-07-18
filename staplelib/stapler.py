@@ -14,16 +14,16 @@ USAGE = """
 usage: %prog [options] mode input.pdf ... [output.pdf]
 
 Modes:
-cat/sel: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+cat/sel: <inputfile> [<pagerange>[<pagesubset>][<rotation>]] ... (output needed)
     Select the given pages/ranges from input files.
     No range means all pages.
-del: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+del: <inputfile> [<pagerange>[<pagesubset>][<rotation>]] ... (output needed)
     Select all but the given pages/ranges from input files.
 burst/split: <inputfile> ... (no output needed)
     Create one file per page in input pdf files (no output needed)
 zip: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Merge/Collate the given input files interleaved.
-background: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+background: <inputfile> [<pagerange>[<pagesubset>][<rotation>]] ... (output needed)
     Merge/Overlay the given input files interleaved.
 info: <inputfile> ... (no output needed)
     Display PDF metadata
@@ -33,9 +33,14 @@ Page ranges:
     n-m - page ranges include the entire specified range (e.g. 1-6)
     m-n - negative ranges sort pages backwards (e.g., 6-3)
 
+Page subsets:
+    even - only even numbered pages in the specified pagerange will be included
+    odd - only odd numbered pages in the specified pagerange will be included
+
 Extended page range options:
     ...-end will be replaced with the last page in the file
-    R, L, or D will rotate the respective range +90, -90, or 180 degrees,
+    end-... will be replaced with the last page in the file
+    L, R, or D will rotate the respective range -90, +90, or 180 degrees,
         respectively. (e.g., 1-15R)
 """.strip()
 
