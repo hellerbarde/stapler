@@ -22,7 +22,11 @@ ROTATION_LEFT = 270
 ROTATIONS = {'u': ROTATION_NONE,
              'r': ROTATION_RIGHT,
              'd': ROTATION_TURN,
-             'l': ROTATION_LEFT}
+             'l': ROTATION_LEFT,
+             'n': ROTATION_NONE,
+             'e': ROTATION_RIGHT,
+             's': ROTATION_TURN,
+             'w': ROTATION_LEFT}
 
 
 def read_pdf(filename):
@@ -93,7 +97,7 @@ def parse_ranges(files_and_ranges):
                                "pdf": read_pdf(inputname),
                                "pages": []})
         else:
-            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?(even|odd)?([LRD]?)',
+            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?(even|odd)?([LRDWES]?)',
                                 inputname)
             if not match:
                 raise CommandError('Invalid range: {}'.format(inputname))
