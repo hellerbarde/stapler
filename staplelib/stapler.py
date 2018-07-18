@@ -11,22 +11,26 @@ import staplelib
 
 
 USAGE = """
-usage: %prog [options] mode input.pdf ... [output.pdf]
+usage: %prog [options] mode (input.pdf|input handle) ... [output.pdf]
 
 Modes:
-cat/sel: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+cat/sel: <inputfile>|<input handle> [<pagerange>[<rotation>]] ... (output needed)
     Select the given pages/ranges from input files.
     No range means all pages.
 del: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Select all but the given pages/ranges from input files.
 burst/split: <inputfile> ... (no output needed)
     Create one file per page in input pdf files (no output needed)
-zip: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
+zip: <inputfile>|<input handle> [<pagerange>[<rotation>]] ... (output needed)
     Merge/Collate the given input files interleaved.
 background: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Merge/Overlay the given input files interleaved.
 info: <inputfile> ... (no output needed)
     Display PDF metadata
+
+Input handle:
+    A single, upper-case letter as an alias to a file
+    For example: A=input1.pdf B=input2.pdf
 
 Page ranges:
     n - single numbers mean single pages (e.g., 15)
