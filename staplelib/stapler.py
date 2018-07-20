@@ -46,7 +46,6 @@ Extended page range options:
     end-... will be replaced with the last page in the file
     L, R, or D will rotate the respective range -90, +90, or 180 degrees,
         respectively. (e.g., 1-15R)
-    W, E, and S are aliases for L, R and D, respectively
 """.strip()
 
 # command line option parser

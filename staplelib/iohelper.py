@@ -22,11 +22,7 @@ ROTATION_LEFT = 270
 ROTATIONS = {'u': ROTATION_NONE,
              'r': ROTATION_RIGHT,
              'd': ROTATION_TURN,
-             'l': ROTATION_LEFT,
-             'n': ROTATION_NONE,
-             'e': ROTATION_RIGHT,
-             's': ROTATION_TURN,
-             'w': ROTATION_LEFT}
+             'l': ROTATION_LEFT}
 
 HANDLES = {}
 
@@ -106,7 +102,7 @@ def parse_ranges(handles_files_and_ranges):
         else:
             handle_key = None
             handle_value = None
-            match = re.match('([A-Z])?([0-9]+|end)(?:-([0-9]+|end))?(even|odd)?([LRDWES]?)',
+            match = re.match('([A-Z])?([0-9]+|end)(?:-([0-9]+|end))?(even|odd)?([LRD]?)',
                                 inputname)
             if not match:
                 raise CommandError('Invalid range: {}'.format(inputname))
