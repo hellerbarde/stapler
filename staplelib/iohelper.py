@@ -42,8 +42,10 @@ def read_pdf(filename):
 
 
 def write_pdf(pdf, filename):
+    force = staplelib.OPTIONS.force
+
     """Write the content of a PdfFileWriter object to a file."""
-    if os.path.exists(filename):
+    if os.path.exists(filename) and not force:
         raise CommandError("File already exists: {}".format(filename))
 
     opt = staplelib.OPTIONS
