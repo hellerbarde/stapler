@@ -127,20 +127,24 @@ def parse_ranges(files_and_ranges):
                     "{} of file {}".format(
                         begin, end, max_page, current['name']))
 
-            if begin == end:
-                pagerange = range(begin, end + 1, step_size)
-            elif begin < end:
-                if page_subset == 'even' and begin_is_odd == True:
-                    begin += 1
-                if page_subset == 'odd' and begin_is_odd == False:
-                    begin += 1
-                pagerange = range(begin, end + 1, step_size)
-            elif begin > end:
+            if begin < 1 or end < 1:
+                raise CommandError(
+                    "Range {}-{} subceeds minimum page number "
+                    "1 of file {}".format(
+                        begin, end, current['name']))
+
+            if begin > end:
                 if page_subset == 'even' and begin_is_odd == True:
                     begin -= 1
                 if page_subset == 'odd' and begin_is_odd == False:
                     begin -= 1
                 pagerange = range(begin, end - 1, step_size * -1)
+            else:
+                if page_subset == 'even' and begin_is_odd == True:
+                    begin += 1
+                if page_subset == 'odd' and begin_is_odd == False:
+                    begin += 1
+                pagerange = range(begin, end + 1, step_size)
 
             for p in pagerange:
                 current['pages'].append((p, rotate))
