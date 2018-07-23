@@ -58,6 +58,9 @@ parser.add_option('-u', '--userpw', action='store', dest='userpw',
                   default=None)
 parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                   default=False)
+parser.add_option('-f', '--force', action='store_true', dest='force',
+                  help='Overwrite output file if it exists',
+                  default=False)
 parser.add_option('-d', '--destdir', dest="destdir", default="." + os.sep,
                   help="directory where to store output file",)
 
