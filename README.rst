@@ -62,6 +62,10 @@ personal muscle memory. :)
 With select, you can cherry-pick pages from pdfs and concatenate them
 into a new pdf file.
 
+Input files can be associated with handles for use with ranges later.
+A handle is a single, upper-case letter:
+    <input handle>=<input>
+
 Syntax:
 
 ::
@@ -79,6 +83,14 @@ Examples:
     # 1, 4-8 in 180° (D for down), 20-40 from a.pdf, 1-5 from b.pdf in 
     # this order
     stapler sel a.pdf 1 4-8D 20-40 b.pdf 1-5 output.pdf
+
+    # the same example with a handle for b.pdf
+    stapler sel B=b.pdf a.pdf 1 4-8D 20-40 B1-5 output.pdf
+
+    # generate a pdf file called output.pdf with the following pages:
+    # 1 from a.pdf, 1-5 from b.pdf, 4-8 in 180° (D for down), 20-40 from a.pdf
+    # this order
+    stapler sel A=a.pdf B=b.pdf A1 B1-5 A4-8D A20-40 output.pdf
 
     # reverse some of the pages in a.pdf by specifying a negative range
     stapler sel a.pdf 1-3 9-6 10 output.pdf

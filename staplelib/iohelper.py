@@ -24,6 +24,7 @@ ROTATIONS = {'u': ROTATION_NONE,
              'd': ROTATION_TURN,
              'l': ROTATION_LEFT}
 
+HANDLES = {}
 
 def read_pdf(filename):
     """Open a PDF file with PyPDF2."""
@@ -85,30 +86,50 @@ def check_output_file(filename):
         raise CommandError("File already exists: {}".format(filename))
 
 
-def parse_ranges(files_and_ranges):
+def parse_ranges(handles_files_and_ranges):
     """Parse a list of filenames followed by ranges."""
 
     operations = []
-    for inputname in files_and_ranges:
-        if inputname.lower().endswith('.pdf'):
+    handle_pattern = re.compile('^[A-Z]=')
+    for inputname in handles_files_and_ranges:
+        handle_key = None
+        handle_value = None
+        if handle_pattern.match(inputname):
+            handle_key,handle_value = inputname.split("=",2)
+            HANDLES[handle_key] = handle_value
+        elif inputname.lower().endswith('.pdf'):
             operations.append({"name": inputname,
                                "pdf": read_pdf(inputname),
                                "pages": []})
         else:
-            match = re.match('([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)',
+            handle_key = None
+            handle_value = None
+            match = re.match('([A-Z])?([0-9]+|end)(?:-([0-9]+|end))?([LRD]?)',
                                 inputname)
             if not match:
                 raise CommandError('Invalid range: {}'.format(inputname))
+
+            if match.group(1):
+                handle_key = match.group(1)
+                if handle_key in HANDLES:
+                    handle_value = HANDLES[handle_key]
+                    operations.append({"name": handle_value,
+                                       "pdf": read_pdf(handle_value),
+                                       "pages": []})
+                else:
+                    raise CommandError(
+                        "Filehandle '{}' does not exist in "
+                        "page range '{}'".format(handle_key, inputname))
 
             current = operations[-1]
             max_page = current['pdf'].getNumPages()
             # allow "end" as alias for the last page
             replace_end = lambda page: (
                 max_page if page.lower() == 'end' else int(page))
-            begin = replace_end(match.group(1))
-            end = replace_end(match.group(2)) if match.group(2) else begin
+            begin = replace_end(match.group(2))
+            end = replace_end(match.group(3)) if match.group(3) else begin
 
-            rotate = ROTATIONS.get((match.group(3) or 'u').lower())
+            rotate = ROTATIONS.get((match.group(4) or 'u').lower())
 
             if begin > max_page or end > max_page:
                 raise CommandError(
