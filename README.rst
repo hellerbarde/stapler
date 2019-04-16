@@ -176,3 +176,25 @@ Example output:
     /Keywords:
     /Author:  John Doe
     /Subject:
+
+list-logical:
+~~~~~~~~~~~~~
+
+Shows each logical page number and the associated physical phage number.
+
+Syntax:
+
+::
+
+    stapler list-logical foo.pdf
+
+Example output:
+
+::
+
+    A-1	1
+    C-1	2
+    D-1	3
+    D-2	4
+    D-3	5
+    D-4	6

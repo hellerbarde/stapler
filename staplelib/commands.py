@@ -241,3 +241,121 @@ def zip(args):
     else:
         iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
                            os.sep + outputfilename)
+
+
+def int_to_page_alpha(pageno, base):
+    """return uppercase alphabetic page numbers for PAGENO starting at BASE (a or A).
+Adobe defines them as A to Z, then AA to ZZ, and so on.
+Yes, that is somewhat wacky."""
+    (div, mod) = divmod( pageno-1, 26)
+    c = chr(mod + ord(base))
+    return c * (div+1)
+
+# next text is from Paul M. Winkler
+# via https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s24.html
+def int_to_roman(input):
+    """ Convert an integer to a Roman numeral. """
+
+    if not isinstance(input, type(1)):
+        raise TypeError, "expected integer, got %s" % type(input)
+    if not 0 < input < 4000:
+        raise ValueError, "Argument must be between 1 and 3999"
+    ints = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
+    nums = ('M',  'CM', 'D', 'CD','C', 'XC','L','XL','X','IX','V','IV','I')
+    result = []
+    for i in range(len(ints)):
+        count = int(input / ints[i])
+        result.append(nums[i] * count)
+        input -= ints[i] * count
+    return ''.join(result)
+
+
+
+#
+# pdf_page_enumeration is
+# inspired by  https://stackoverflow.com/questions/12360999/retrieve-page-numbers-from-document-with-pypdf
+# (thanks vjayky!)
+# and informed by https://www.w3.org/TR/WCAG20-TECHS/PDF17.html
+# (thanks, w3c!)
+# which recaps the PDF-1.7 specification
+# https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf
+#
+def pdf_page_enumeration(pdf):
+    """Generate a list of pages, using /PageLabels (if it exists).  Returns a list of labels."""
+    
+    try:
+        pagelabels = pdf.trailer["/Root"]["/PageLabels"]
+    except:
+        # ("No /Root/PageLabels object"), so infer the list.
+        return range(1, pdf.getNumPages() + 1)
+    
+    # """Select the item that is most likely to contain the information you desire; e.g.
+    #        {'/Nums': [0, IndirectObject(42, 0)]}
+    #    here, we only have "/Num". """
+    
+    try:
+        pagelabels_nums = pdf.trailer["/Root"]["/PageLabels"]["/Nums"]
+    except:
+        raise CommandError("Malformed PDF, /Root/PageLabels but no .../Nums object")
+
+    #
+    # At this point we have either the object or the list.
+    # Make it a list.
+    #
+    if isinstance(pagelabels_nums, (list,)):
+        pagelabels_nums_list = pagelabels_nums
+    else:
+        pagelabels_nums_list = list(pagelabels_nums)
+
+    labels = []
+    style = None
+    # default
+    style = '/D'
+    prefix = ''
+    next_pageno = 1
+    for i in range(0, pdf.getNumPages()):
+        if len(pagelabels_nums_list) > 0 and i >= pagelabels_nums_list[0]:
+            pagelabels_nums_list.pop(0)  # discard index
+            pnle = pagelabels_nums_list.pop(0)
+            style = pnle.get('/S', '/D')
+            prefix = pnle.get('/P', '')
+            next_pageno = pnle.get('/St', 1)
+        pageno_str = ''
+        if style == '/D':
+            pageno_str = str(next_pageno)
+        elif style == '/A':
+            pageno_str = int_to_page_alpha(next_pageno, 'A')
+        elif style == '/a':
+            pageno_str = int_to_page_alpha(next_pageno, 'a')
+        elif style == '/R':
+            pageno_str = int_to_roman(next_pageno)
+        elif style == '/r':
+            pageno_str = int_to_roman(next_pageno).lower()
+        else:
+            raise CommandError("Malformded PDF: unkown page numbering style " + style)
+        labels.append(prefix + pageno_str)
+        next_pageno += 1
+
+    return labels
+
+
+def list_logical_pages(args):
+    """List the logical names of each page."""
+    verbose = staplelib.OPTIONS.verbose
+
+    files = args
+    if not files:
+        raise CommandError("An input filename is required.")
+
+    try:
+        for input in files:
+            pdf = iohelper.read_pdf(input)
+            if verbose:
+                print input
+            i = 0
+            for label in pdf_page_enumeration(pdf):
+                i += 1
+                print "{}\t{}".format(label, str(i))
+
+    except Exception, e:
+        raise CommandError(e)

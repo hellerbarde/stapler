@@ -27,6 +27,8 @@ background: <inputfile> [<pagerange>[<rotation>]] ... (output needed)
     Merge/Overlay the given input files interleaved.
 info: <inputfile> ... (no output needed)
     Display PDF metadata
+list-log(ical): <inputfile>
+    Display the logical names of each page.
 
 Input handle:
     A single, upper-case letter as an alias to a file
@@ -83,6 +85,8 @@ def main():
         "info": commands.info,
         "zip": commands.zip,
         "background": commands.background,
+        "list-log": commands.list_logical_pages,
+        "list-logical": commands.list_logical_pages,
     }
 
     mode = args[0]
