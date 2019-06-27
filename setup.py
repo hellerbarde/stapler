@@ -6,14 +6,14 @@ setup(name="stapler",
     version=version,
     description="Manipulate PDF documents from the command line",
     keywords="pdf utility cli concatenate tool",
-    
+
     author="Philip Stark, Fred Wenzel",
     author_email="git@codechaos.ch",
     url="https://github.com/hellerbarde/stapler",
 
     install_requires = [
         "PyPDF2>=1.24",
-        "more-itertools>=2.2"
+        "more-itertools>=2.2,<6.0.0"
     ],
 
     include_package_data=True,
