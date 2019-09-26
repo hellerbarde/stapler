@@ -31,7 +31,7 @@ def read_pdf(filename):
     """Open a PDF file with PyPDF2."""
     if not os.path.exists(filename):
         raise CommandError("{} does not exist".format(filename))
-    pdf = PdfFileReader(file(filename, "rb"))
+    pdf = PdfFileReader(open(filename, "rb"))
     if pdf.isEncrypted:
         while True:
             pw = prompt_for_pw(filename)
@@ -55,7 +55,7 @@ def write_pdf(pdf, filename):
         if opt.ownerpw or opt.userpw:
             pdf.encrypt(opt.userpw or '', opt.ownerpw)
 
-    outputStream = file(filename, "wb")
+    outputStream = open(filename, "wb")
     pdf.write(outputStream)
     outputStream.close()
 
