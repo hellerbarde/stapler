@@ -101,7 +101,7 @@ def main():
     # dispatch call to known subcommand
     try:
         modes[mode](args)
-    except CommandError, e:
+    except CommandError as e:
         print_error(e)
 
 

@@ -59,7 +59,7 @@ def select(args, inverse=False):
                     raise CommandError("Page {} not found in {}.".format(
                         pageno, input['name']))
 
-    except Exception, e:
+    except Exception as e:
         raise CommandError(e)
 
     if os.path.isabs(outputfilename):
@@ -86,7 +86,7 @@ def split(args):
     try:
         for f in files:
             inputs.append(iohelper.read_pdf(f))
-    except Exception, e:
+    except Exception as e:
         raise CommandError(e)
 
     filecount = 0
@@ -185,7 +185,7 @@ def background(args):
                 page.mergePage(p)
             output.addPage(page)
 
-    except Exception, e:
+    except Exception as e:
         import sys
         import traceback
         traceback.print_tb(sys.exc_info()[2])
@@ -258,9 +258,9 @@ def int_to_roman(input):
     """ Convert an integer to a Roman numeral. """
 
     if not isinstance(input, type(1)):
-        raise TypeError, "expected integer, got %s" % type(input)
+        raise TypeError("expected integer, got %s" % type(input))
     if not 0 < input < 4000:
-        raise ValueError, "Argument must be between 1 and 3999"
+        raise ValueError("Argument must be between 1 and 3999")
     ints = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
     nums = ('M',  'CM', 'D', 'CD','C', 'XC','L','XL','X','IX','V','IV','I')
     result = []
@@ -358,5 +358,5 @@ def list_logical_pages(args):
                 i += 1
                 print("{}\t{}".format(label, str(i)))
 
-    except Exception, e:
+    except Exception as e:
         raise CommandError(e)
