@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Main stapler dispatcher."""
 
+from __future__ import print_function
 from optparse import OptionParser
 import os
 import sys
@@ -95,7 +96,7 @@ def main():
         print_error('Please enter a valid mode', show_usage=True)
 
     if staplelib.OPTIONS.verbose:
-        print "Mode: %s" % mode
+        print("Mode: %s" % mode)
 
     # dispatch call to known subcommand
     try:

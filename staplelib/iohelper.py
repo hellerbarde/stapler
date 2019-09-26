@@ -1,5 +1,6 @@
 """Helper functions for user-supplied arguments and file I/O."""
 
+from __future__ import print_function
 import getpass
 import os.path
 import re
@@ -38,7 +39,7 @@ def read_pdf(filename):
             if matched:
                 break
             else:
-                print "The password did not match."
+                print("The password did not match.")
     return pdf
 
 
@@ -61,8 +62,8 @@ def write_pdf(pdf, filename):
 
 def prompt_for_pw(filename):
     """Prompt the user for the password to access an input file."""
-    print 'Please enter a password to decrypt {}.'.format(filename)
-    print '(The password will not be shown. Press ^C to cancel).'
+    print('Please enter a password to decrypt {}.'.format(filename))
+    print('(The password will not be shown. Press ^C to cancel).')
 
     try:
         return getpass.getpass('--> ')
