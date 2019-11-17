@@ -1,4 +1,5 @@
 """Module containing the actual commands stapler understands."""
+from __future__ import print_function
 import math
 import os
 
@@ -33,7 +34,7 @@ def select(args, inverse=False):
         for input in filesandranges:
             pdf = input['pdf']
             if verbose:
-                print input['name']
+                print(input['name'])
 
             # empty range means "include all pages"
             if not inverse:
@@ -49,8 +50,8 @@ def select(args, inverse=False):
             for pageno, rotate in pagerange:
                 if 1 <= pageno <= pdf.getNumPages():
                     if verbose:
-                        print "Using page: {} (rotation: {} deg.)".format(
-                            pageno, rotate)
+                        print("Using page: {} (rotation: {} deg.)".format(
+                            pageno, rotate))
 
                     output.addPage(pdf.getPage(pageno-1)
                                    .rotateClockwise(rotate))
@@ -58,7 +59,7 @@ def select(args, inverse=False):
                     raise CommandError("Page {} not found in {}.".format(
                         pageno, input['name']))
 
-    except Exception, e:
+    except Exception as e:
         raise CommandError(e)
 
     if os.path.isabs(outputfilename):
@@ -85,7 +86,7 @@ def split(args):
     try:
         for f in files:
             inputs.append(iohelper.read_pdf(f))
-    except Exception, e:
+    except Exception as e:
         raise CommandError(e)
 
     filecount = 0
@@ -108,15 +109,15 @@ def split(args):
 
             outputname = output_template % (pageno + 1)
             if verbose:
-                print outputname
+                print(outputname)
             iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
                                os.sep + outputname)
             pagecount += 1
         filecount += 1
 
     if verbose:
-        print "\n{} page(s) in {} file(s) processed.".format(
-            pagecount, filecount)
+        print("\n{} page(s) in {} file(s) processed.".format(
+            pagecount, filecount))
 
 
 def info(args):
@@ -128,15 +129,15 @@ def info(args):
 
     for f in files:
         pdf = iohelper.read_pdf(f)
-        print "*** Metadata for {}".format(f)
-        print
+        print("*** Metadata for {}".format(f))
+        print()
         info = pdf.documentInfo
         if info:
             for name, value in info.items():
-                print u"    {}:  {}".format(name, value)
+                print(u"    {}:  {}".format(name, value))
         else:
-            print "    (No metadata found.)"
-        print
+            print("    (No metadata found.)")
+        print()
 
 def background(args):
     """Combine 2 files with corresponding pages merged."""
@@ -153,7 +154,7 @@ def background(args):
         for input in filesandranges:
             pdf = input['pdf']
             if verbose:
-                print input['name']
+                print(input['name'])
 
             # empty range means "include all pages"
             pagerange = input['pages'] or [
@@ -164,8 +165,8 @@ def background(args):
             for pageno, rotate in pagerange:
                 if 1 <= pageno <= pdf.getNumPages():
                     if verbose:
-                        print "Using page: {} (rotation: {} deg.)".format(
-                            pageno, rotate)
+                        print("Using page: {} (rotation: {} deg.)".format(
+                            pageno, rotate))
 
                     pagestozip.append(pdf.getPage(pageno-1)
                                    .rotateClockwise(rotate))
@@ -184,7 +185,7 @@ def background(args):
                 page.mergePage(p)
             output.addPage(page)
 
-    except Exception, e:
+    except Exception as e:
         import sys
         import traceback
         traceback.print_tb(sys.exc_info()[2])
@@ -210,7 +211,7 @@ def zip(args):
     for input in filesandranges:
         pdf = input['pdf']
         if verbose:
-            print input['name']
+            print(input['name'])
 
         # Empty range means "include all pages".
         pagerange = input['pages'] or [
@@ -221,8 +222,8 @@ def zip(args):
         for pageno, rotate in pagerange:
             if 1 <= pageno <= pdf.getNumPages():
                 if verbose:
-                    print "Using page: {} (rotation: {} deg.)".format(
-                        pageno, rotate)
+                    print("Using page: {} (rotation: {} deg.)".format(
+                        pageno, rotate))
 
                 pagestozip.append(
                     pdf.getPage(pageno - 1).rotateClockwise(rotate))
@@ -257,9 +258,9 @@ def int_to_roman(input):
     """ Convert an integer to a Roman numeral. """
 
     if not isinstance(input, type(1)):
-        raise TypeError, "expected integer, got %s" % type(input)
+        raise TypeError("expected integer, got %s" % type(input))
     if not 0 < input < 4000:
-        raise ValueError, "Argument must be between 1 and 3999"
+        raise ValueError("Argument must be between 1 and 3999")
     ints = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
     nums = ('M',  'CM', 'D', 'CD','C', 'XC','L','XL','X','IX','V','IV','I')
     result = []
@@ -351,11 +352,11 @@ def list_logical_pages(args):
         for input in files:
             pdf = iohelper.read_pdf(input)
             if verbose:
-                print input
+                print(input)
             i = 0
             for label in pdf_page_enumeration(pdf):
                 i += 1
-                print "{}\t{}".format(label, str(i))
+                print("{}\t{}".format(label, str(i)))
 
-    except Exception, e:
+    except Exception as e:
         raise CommandError(e)
