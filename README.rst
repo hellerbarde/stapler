@@ -180,7 +180,7 @@ Example output:
 list-logical:
 ~~~~~~~~~~~~~
 
-Shows each logical page number and the associated physical phage number.
+Shows each logical page number and the associated physical page number.
 
 Syntax:
 
