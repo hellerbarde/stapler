@@ -8,5 +8,5 @@ OPTIONS = None # optparse options
 
 
 def main():
-    import stapler
+    from . import stapler
     stapler.main()
