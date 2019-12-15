@@ -1,0 +1,12 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+stapler = {editable = true,file = "file:///home/phil/git/stapler"}
+
+[requires]
+python_version = "3.8"
