@@ -7,8 +7,8 @@ from staplelib import stapler
 
 __author__ = 'Philip Stark, Fred Wenzel'
 __license__ = 'BSD'
-VERSION = (0, 3, 4)
-__version__ = '.'.join(map(str, VERSION))
+VERSION = (1, 0, 0)
+__version__ = '.'.join(map(str, VERSION)) + 'rc1'
 
 
 if __name__ == '__main__':
