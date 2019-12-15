@@ -13,7 +13,7 @@ setup(name="stapler",
 
     install_requires = [
         "PyPDF2>=1.26",
-        "more-itertools>=4"
+        "more-itertools>=2.2,<6.0.0"
     ],
 
     include_package_data=True,

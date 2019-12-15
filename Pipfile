@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 PyPDF2 = ">=1.26"
-more-itertools = ">=4"
+more-itertools = ">=2.2,<6.0.0"
 
 [requires]
 python_version = "3.8"
