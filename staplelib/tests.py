@@ -109,5 +109,6 @@ class TestStapler(unittest.TestCase):
             self.assertEqual(e.returncode, 1)
             self.assertIn('Error: File already exists:', e.output)
 
+
 if __name__ == '__main__':
     unittest.main()
