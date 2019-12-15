@@ -34,6 +34,9 @@ For a list of contributors, check the ``CONTRIBUTORS`` file.
 Change log (sorta)
 ------------------
 
+- **1.0.0** Port to Python 3. Replace OptionParser with more
+  modern ArgumentParser. Cleaning up repository.
+
 - **0.3.3** include try-except blocks for supporting legacy pyPdf
   if needed. Also fixes some PyPI issues like the missing License Trove
   classifier and some dependencies.
