@@ -3,16 +3,16 @@
 """Main stapler dispatcher."""
 
 from __future__ import print_function
-from optparse import OptionParser
+
 import os
 import sys
+from argparse import ArgumentParser
 
-from . import commands, CommandError
 import staplelib
-
+from . import commands, CommandError
 
 USAGE = """
-usage: %prog [options] mode (input.pdf|input handle) ... [output.pdf]
+usage: %(prog)s [options] mode (input.pdf|input handle) ... [output.pdf]
 
 Modes:
 cat/sel: <inputfile>|<input handle> [<pagerange>[<rotation>]] ... (output needed)
@@ -47,34 +47,47 @@ Extended page range options:
 """.strip()
 
 # command line option parser
-parser = OptionParser(usage=USAGE)
-parser.add_option('-o', '--ownerpw', action='store', dest='ownerpw',
-                  help='Set owner password to encrypt output file with',
-                  default=None)
-parser.add_option('-u', '--userpw', action='store', dest='userpw',
-                  help='Set user password to encrypt output file with',
-                  default=None)
-parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-                  default=False)
-parser.add_option('-f', '--force', action='store_true', dest='force',
-                  help='Overwrite output file if it exists',
-                  default=False)
-parser.add_option('-d', '--destdir', dest="destdir", default="." + os.sep,
-                  help="directory where to store output file",)
-
+argparser = ArgumentParser(usage=USAGE)
+argparser.add_argument('-o', '--ownerpw',
+                       action='store',
+                       dest='ownerpw',
+                       help='Set owner password to encrypt output file with',
+                       default=None)
+argparser.add_argument('-u', '--userpw',
+                       action='store',
+                       dest='userpw',
+                       help='Set user password to encrypt output file with',
+                       default=None)
+argparser.add_argument('-v', '--verbose',
+                       action='store_true',
+                       dest='verbose',
+                       default=False)
+argparser.add_argument('-f', '--force',
+                       action='store_true',
+                       dest='force',
+                       help='Overwrite output file if it exists',
+                       default=False)
+argparser.add_argument('-d', '--destdir',
+                       dest="destdir",
+                       default="." + os.sep,
+                       help="directory where to store output file", )
+argparser.add_argument('mode',
+                       action='store',
+                       help="requested stapler mode")
 
 def main():
     """
     Handle all command line arguments and pass them on to the respective
     commands.
     """
-    (staplelib.OPTIONS, args) = parser.parse_args()
+
+    (staplelib.OPTIONS, args) = argparser.parse_known_args()
 
     if not os.path.exists(staplelib.OPTIONS.destdir):
         print_error("cannot find output directory named {}".format(
                     staplelib.OPTIONS.destdir))
 
-    if (len(args) < 2):
+    if (len(args) < 1):
         print_error("Not enough arguments", show_usage=True)
 
     modes = {
@@ -90,8 +103,8 @@ def main():
         "list-logical": commands.list_logical_pages,
     }
 
-    mode = args[0]
-    args = args[1:]
+    mode = staplelib.OPTIONS.mode
+
     if not mode in modes:
         print_error('Please enter a valid mode', show_usage=True)
 
@@ -110,6 +123,6 @@ def print_error(msg, code=1, show_usage=False):
     sys.stderr.write(str('Error: {}\n'.format(msg)))
 
     if show_usage:
-        sys.stderr.write("\n{}\n".format(parser.get_usage()))
+        sys.stderr.write("\n{}\n".format(argparser.get_usage()))
 
     sys.exit(code)
