@@ -75,6 +75,7 @@ argparser.add_argument('mode',
                        action='store',
                        help="requested stapler mode")
 
+
 def main():
     """
     Handle all command line arguments and pass them on to the respective
@@ -105,7 +106,7 @@ def main():
 
     mode = staplelib.OPTIONS.mode
 
-    if not mode in modes:
+    if mode not in modes:
         print_error('Please enter a valid mode', show_usage=True)
 
     if staplelib.OPTIONS.verbose:
@@ -123,6 +124,6 @@ def print_error(msg, code=1, show_usage=False):
     sys.stderr.write(str('Error: {}\n'.format(msg)))
 
     if show_usage:
-        sys.stderr.write("\n{}\n".format(argparser.get_usage()))
+        argparser.print_usage(sys.stderr)
 
     sys.exit(code)
