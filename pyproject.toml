@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "stapler3"
-version = "1.0.0"
+version = "1.0.1"
 description = "Manipulate PDF documents from the command line"
 authors = ["Philip Stark", "Fred Wenzel"]
 license = "BSD-3-Clause"
