@@ -67,6 +67,8 @@ into a new pdf file.
 
 Input files can be associated with handles for use with ranges later.
 A handle is a single, upper-case letter:
+
+::
     <input handle>=<input>
 
 Syntax:
