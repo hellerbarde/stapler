@@ -75,6 +75,7 @@ argparser.add_argument('mode',
                        action='store',
                        help="requested stapler mode")
 
+
 def main(arguments=None):
     """
     Handle all command line arguments and pass them on to the respective
@@ -88,7 +89,7 @@ def main(arguments=None):
 
     if not os.path.exists(staplelib.OPTIONS.destdir):
         print_error_and_exit("cannot find output directory named {}".format(
-                    staplelib.OPTIONS.destdir))
+            staplelib.OPTIONS.destdir))
 
     if (len(args) < 1):
         print_error_and_exit("Not enough arguments", show_usage=True)
@@ -108,7 +109,7 @@ def main(arguments=None):
 
     mode = staplelib.OPTIONS.mode
 
-    if not mode in modes:
+    if mode not in modes:
         print_error_and_exit('Please enter a valid mode', show_usage=True)
 
     if staplelib.OPTIONS.verbose:
@@ -126,6 +127,6 @@ def print_error_and_exit(msg, code=1, show_usage=False):
     sys.stderr.write(str('Error: {}\n'.format(msg)))
 
     if show_usage:
-        sys.stderr.write("\n{}\n".format(argparser.get_usage()))
+        argparser.print_usage(sys.stderr)
 
     sys.exit(code)
