@@ -10,4 +10,4 @@ PyPDF2 = ">=1.26"
 more-itertools = ">=2.2,<6.0.0"
 
 [requires]
-python_version = "3.8"
+python_version = ">3.3"
