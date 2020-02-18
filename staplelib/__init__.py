@@ -7,6 +7,6 @@ class CommandError(Exception):
 OPTIONS = None # optparse options
 
 
-def main():
+def main(arguments=None):
     from . import stapler
-    stapler.main()
+    stapler.main(arguments)

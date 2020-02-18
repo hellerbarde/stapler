@@ -75,20 +75,23 @@ argparser.add_argument('mode',
                        action='store',
                        help="requested stapler mode")
 
-def main():
+def main(arguments=None):
     """
     Handle all command line arguments and pass them on to the respective
     commands.
     """
 
-    (staplelib.OPTIONS, args) = argparser.parse_known_args()
+    if not arguments:
+        arguments = sys.argv[1:]
+
+    (staplelib.OPTIONS, args) = argparser.parse_known_args(args=arguments)
 
     if not os.path.exists(staplelib.OPTIONS.destdir):
-        print_error("cannot find output directory named {}".format(
+        print_error_and_exit("cannot find output directory named {}".format(
                     staplelib.OPTIONS.destdir))
 
     if (len(args) < 1):
-        print_error("Not enough arguments", show_usage=True)
+        print_error_and_exit("Not enough arguments", show_usage=True)
 
     modes = {
         "cat": commands.select,
@@ -106,7 +109,7 @@ def main():
     mode = staplelib.OPTIONS.mode
 
     if not mode in modes:
-        print_error('Please enter a valid mode', show_usage=True)
+        print_error_and_exit('Please enter a valid mode', show_usage=True)
 
     if staplelib.OPTIONS.verbose:
         print("Mode: %s" % mode)
@@ -115,10 +118,10 @@ def main():
     try:
         modes[mode](args)
     except CommandError as e:
-        print_error(e)
+        print_error_and_exit(e)
 
 
-def print_error(msg, code=1, show_usage=False):
+def print_error_and_exit(msg, code=1, show_usage=False):
     """Pretty-print an error to the user."""
     sys.stderr.write(str('Error: {}\n'.format(msg)))
 
