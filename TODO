@@ -1,21 +1,13 @@
 Comparison with pdftk features:
 [x] = done, [?] = maybe, [ ] = to do
 
-[ ] Python 3 Support (pypdf can do it, I think)
-[x] Merge PDF Documents
-[x] Split PDF Pages into a New Document
-[x] Rotate PDF Pages or Documents
-[x] Decrypt Input as Necessary (Password Required)
-[x] Encrypt Output as Desired
 [?] Fill PDF Forms with FDF Data or XFDF Data and/or Flatten Forms
 [?] Apply a Background Watermark or a Foreground Stamp
 [ ] Report on PDF Metrics such as Metadata, Bookmarks, and Page Labels
 [?] Update PDF Metadata
 [?] Attach Files to PDF Pages or the PDF Document
 [?] Unpack PDF Attachments
-[x] Burst a PDF Document into Single Pages
 [ ] Uncompress and Re-Compress Page Streams
-[x] Repair Corrupted PDF (Where Possible)
 
 Known issues:
 - The same page of the same input file cannot be added to the output twice
