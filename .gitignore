@@ -4,4 +4,6 @@ build
 dist
 *egg-info*
 /venv
-/.idea
+/.idea/
+/.tox/
+/.python-version
