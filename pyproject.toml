@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "stapler"
+version = "1.0.0-rc1"
+description = "Manipulate PDF documents from the command line"
+authors = ["Philip Stark", "Fred Wenzel"]
+license = "BSD-3-Clause"
+readme = 'README.rst'
+packages = [
+    { include = "staplelib" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.4"
+PyPDF2 = ">=1.26"
+more-itertools = ">=2.2,<6.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = ">=5"
+tox = "^3.14"
+tox-pyenv = "^1.1"
+
+[tool.poetry.scripts]
+stapler = 'staplelib:main'
+pdf-stapler = 'staplelib:main'
+
+# this section is for PEP517 compliance. It is technically unnecessary if using Poetry
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"
