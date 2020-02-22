@@ -1,0 +1,32 @@
+name: Test & Deploy
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install Poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: Install dependencies
+        run: poetry install
+      - name: Run Tox
+        run: poetry run tox -e py  # Run tox using the version of Python in `PATH`
+      - name: Build package
+        run: poetry build
+      - name: Deploy to PyPI
+        run: poetry publish
+        continue-on-error: true
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+            POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
