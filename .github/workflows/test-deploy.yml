@@ -3,7 +3,9 @@ name: Test & Deploy
 on: [push]
 
 jobs:
+
   build:
+  release:
 
     runs-on: ubuntu-latest
     strategy:
@@ -27,6 +29,6 @@ jobs:
       - name: Deploy to PyPI
         run: poetry publish
         continue-on-error: true
-        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: success() && github.event_name == 'release' && github.ref == 'refs/heads/master'
         env:
             POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
