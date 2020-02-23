@@ -1,11 +1,14 @@
 name: Test & Deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
 
   build:
-  release:
 
     runs-on: ubuntu-latest
     strategy:
