@@ -1,6 +1,10 @@
 name: Test & Deploy
 
-on: [push]
+on:
+  push:
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -27,6 +31,6 @@ jobs:
       - name: Deploy to PyPI
         run: poetry publish
         continue-on-error: true
-        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: success() && github.event_name == 'release'
         env:
             POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
