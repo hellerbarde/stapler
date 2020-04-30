@@ -84,6 +84,14 @@ class TestStapler(unittest.TestCase):
                 pdf = PdfFileReader(pdf_file)
                 self.assertEqual(pdf.getNumPages(), 1)
 
+    def test_background(self):
+        """Test background."""
+        run_stapler(['background', ONEPAGE_PDF, FIVEPAGE_PDF, self.outputfile])
+        self.assertTrue(os.path.isfile(self.outputfile))
+        with open(self.outputfile, 'rb') as outputfile:
+            pdf = PdfFileReader(outputfile)
+            self.assertEqual(pdf.getNumPages(), 5)
+
     def test_zip(self):
         """Test zip."""
         run_stapler(['zip', ONEPAGE_PDF, FIVEPAGE_PDF, self.outputfile])
