@@ -12,7 +12,6 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.4"
 PyPDF2 = ">=1.26"
-more-itertools = ">=2.2,<6.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
