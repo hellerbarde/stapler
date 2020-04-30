@@ -7,8 +7,6 @@ try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except:
     from pyPdf import PdfFileWriter, PdfFileReader
-import itertools
-import more_itertools
 
 from . import CommandError, iohelper
 import staplelib
@@ -139,6 +137,35 @@ def info(args):
             print("    (No metadata found.)")
         print()
 
+def zip_pdf_pages(filesandranges, verbose):
+    # Make [[file1_p1, file1_p2], [file2_p1, file2_p2], ...].
+    filestozip = []
+    for input in filesandranges:
+        pdf = input['pdf']
+        if verbose:
+            print(input['name'])
+
+        # empty range means "include all pages"
+        pagerange = input['pages'] or [
+            (p, iohelper.ROTATION_NONE) for p in
+            range(1, pdf.getNumPages() + 1)]
+
+        pagestozip = []
+        for pageno, rotate in pagerange:
+            if 1 <= pageno <= pdf.getNumPages():
+                if verbose:
+                    print("Using page: {} (rotation: {} deg.)".format(
+                        pageno, rotate))
+
+                pagestozip.append(pdf.getPage(pageno-1)
+                               .rotateClockwise(rotate))
+            else:
+                raise CommandError("Page {} not found in {}.".format(
+                    pageno, input['name']))
+        filestozip.append(pagestozip)
+
+    return filestozip
+
 def background(args):
     """Combine 2 files with corresponding pages merged."""
 
@@ -150,39 +177,18 @@ def background(args):
         raise CommandError("Both input and output filenames are required.")
 
     try:
-        filestozip = []
-        for input in filesandranges:
-            pdf = input['pdf']
-            if verbose:
-                print(input['name'])
-
-            # empty range means "include all pages"
-            pagerange = input['pages'] or [
-                (p, iohelper.ROTATION_NONE) for p in
-                range(1, pdf.getNumPages() + 1)]
-
-            pagestozip = []
-            for pageno, rotate in pagerange:
-                if 1 <= pageno <= pdf.getNumPages():
-                    if verbose:
-                        print("Using page: {} (rotation: {} deg.)".format(
-                            pageno, rotate))
-
-                    pagestozip.append(pdf.getPage(pageno-1)
-                                   .rotateClockwise(rotate))
-                else:
-                    raise CommandError("Page {} not found in {}.".format(
-                        pageno, input['name']))
-            filestozip.append(pagestozip)
+        filestozip = zip_pdf_pages(filesandranges, verbose)
 
         output = PdfFileWriter()
-        for pagelist in list(itertools.izip_longest(*filestozip)):
-            page = pagelist[0]
-            for p in pagelist[1:]:
-              if not page:
-                page = p
-              elif p:
-                page.mergePage(p)
+        for pageno in range(max(map(len, filestozip))):
+            page = None
+            for listno in range(len(filestozip)):
+                if pageno < len(filestozip[listno]):
+                    p = filestozip[listno][pageno]
+                    if not page:
+                        page = p
+                    else:
+                        page.mergePage(p)
             output.addPage(page)
 
     except Exception as e:
@@ -206,36 +212,14 @@ def zip(args):
     if not filesandranges or not outputfilename:
         raise CommandError('Both input and output filenames are required.')
 
-    # Make [[file1_p1, file1_p2], [file2_p1, file2_p2], ...].
-    filestozip = []
-    for input in filesandranges:
-        pdf = input['pdf']
-        if verbose:
-            print(input['name'])
-
-        # Empty range means "include all pages".
-        pagerange = input['pages'] or [
-            (p, iohelper.ROTATION_NONE) for p in
-            range(1, pdf.getNumPages() + 1)]
-
-        pagestozip = []
-        for pageno, rotate in pagerange:
-            if 1 <= pageno <= pdf.getNumPages():
-                if verbose:
-                    print("Using page: {} (rotation: {} deg.)".format(
-                        pageno, rotate))
-
-                pagestozip.append(
-                    pdf.getPage(pageno - 1).rotateClockwise(rotate))
-            else:
-                raise CommandError("Page {} not found in {}.".format(
-                    pageno, input['name']))
-        filestozip.append(pagestozip)
+    filestozip = zip_pdf_pages(filesandranges, verbose)
 
     # Interweave pages.
     output = PdfFileWriter()
-    for page in more_itertools.roundrobin(*filestozip):
-        output.addPage(page)
+    for pageno in range(max(map(len, filestozip))):
+        for listno in range(len(filestozip)):
+            if pageno < len(filestozip[listno]):
+                output.addPage(filestozip[listno][pageno])
 
     if os.path.isabs(outputfilename):
         iohelper.write_pdf(output, outputfilename)
