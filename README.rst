@@ -204,3 +204,18 @@ Example output:
     D-2	4
     D-3	5
     D-4	6
+
+background
+~~~~~~~~~~
+
+Merge/Overlay the given input files interleaved. Similar to zip, it merges the pages into a single page instead of interleaving them.
+
+Syntax: stapler background input1 [range[rotation]] [range ...] [input2
+[range...] ...] out
+
+Examples:
+
+::
+
+    # merge the pages of two pdfs into divided pages that will include both
+    stapler background input1.pdf input2.pdf output.pdf
