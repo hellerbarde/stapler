@@ -5,9 +5,13 @@ description = "Manipulate PDF documents from the command line"
 authors = ["Philip Stark", "Fred Wenzel"]
 license = "BSD-3-Clause"
 readme = 'README.rst'
+repository = "https://github.com/hellerbarde/stapler"
 packages = [
     { include = "staplelib" },
 ]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/hellerbarde/stapler/issues"
 
 [tool.poetry.dependencies]
 python = "^3.4"
