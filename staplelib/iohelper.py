@@ -33,12 +33,11 @@ def read_pdf(filename):
         raise CommandError("{} does not exist".format(filename))
     pdf = PdfFileReader(open(filename, "rb"))
     if pdf.isEncrypted:
-        while True:
+        matched = pdf.decrypt('')
+        while not matched:
             pw = prompt_for_pw(filename)
             matched = pdf.decrypt(pw)
-            if matched:
-                break
-            else:
+            if not matched:
                 print("The password did not match.")
     return pdf
 
