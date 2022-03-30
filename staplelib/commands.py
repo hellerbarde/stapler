@@ -11,6 +11,12 @@ except:
 from . import CommandError, iohelper
 import staplelib
 
+def _write_output(output, outputfilename):
+    if os.path.isabs(outputfilename):
+        iohelper.write_pdf(output, outputfilename)
+    else:
+        iohelper.write_pdf(output, os.path.normpath(staplelib.OPTIONS.destdir +
+                           os.sep + outputfilename))
 
 def select(args, inverse=False):
     """
@@ -60,11 +66,7 @@ def select(args, inverse=False):
     except Exception as e:
         raise CommandError(e)
 
-    if os.path.isabs(outputfilename):
-        iohelper.write_pdf(output, outputfilename)
-    else:
-        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
-                           os.sep + outputfilename)
+    _write_output(output, outputfilename)
 
 
 def delete(args):
@@ -197,11 +199,7 @@ def background(args):
         traceback.print_tb(sys.exc_info()[2])
         raise CommandError(e)
 
-    if os.path.isabs(outputfilename):
-        iohelper.write_pdf(output, outputfilename)
-    else:
-        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
-                           os.sep + outputfilename)
+    _write_output(output, outputfilename)
 
 def zip(args):
     """Combine 2 files with interleaved pages."""
@@ -221,11 +219,7 @@ def zip(args):
             if pageno < len(filestozip[listno]):
                 output.addPage(filestozip[listno][pageno])
 
-    if os.path.isabs(outputfilename):
-        iohelper.write_pdf(output, outputfilename)
-    else:
-        iohelper.write_pdf(output, staplelib.OPTIONS.destdir +
-                           os.sep + outputfilename)
+    _write_output(output, outputfilename)
 
 
 def int_to_page_alpha(pageno, base):
