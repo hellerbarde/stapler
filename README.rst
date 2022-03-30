@@ -219,3 +219,20 @@ Examples:
 
     # merge the pages of two pdfs into divided pages that will include both
     stapler background input1.pdf input2.pdf output.pdf
+
+Docker
+~~~~~~
+
+Build-Syntax:
+
+
+::
+
+    docker build -t stapler
+
+Run-Syntax:
+
+::
+
+    docker run stapler:latest stapler info <arguments> ...
+
