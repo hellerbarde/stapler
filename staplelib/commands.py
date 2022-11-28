@@ -2,6 +2,7 @@
 from __future__ import print_function
 import math
 import os
+import subprocess
 
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
@@ -11,12 +12,14 @@ except:
 from . import CommandError, iohelper
 import staplelib
 
+
 def _write_output(output, outputfilename):
     if os.path.isabs(outputfilename):
         iohelper.write_pdf(output, outputfilename)
     else:
         iohelper.write_pdf(output, os.path.normpath(staplelib.OPTIONS.destdir +
                            os.sep + outputfilename))
+
 
 def select(args, inverse=False):
     """
@@ -139,6 +142,7 @@ def info(args):
             print("    (No metadata found.)")
         print()
 
+
 def zip_pdf_pages(filesandranges, verbose):
     # Make [[file1_p1, file1_p2], [file2_p1, file2_p2], ...].
     filestozip = []
@@ -160,13 +164,14 @@ def zip_pdf_pages(filesandranges, verbose):
                         pageno, rotate))
 
                 pagestozip.append(pdf.getPage(pageno-1)
-                               .rotateClockwise(rotate))
+                                  .rotateClockwise(rotate))
             else:
                 raise CommandError("Page {} not found in {}.".format(
                     pageno, input['name']))
         filestozip.append(pagestozip)
 
     return filestozip
+
 
 def background(args):
     """Combine 2 files with corresponding pages merged."""
@@ -201,6 +206,7 @@ def background(args):
 
     _write_output(output, outputfilename)
 
+
 def zip(args):
     """Combine 2 files with interleaved pages."""
     filesandranges = iohelper.parse_ranges(args[:-1])
@@ -226,12 +232,14 @@ def int_to_page_alpha(pageno, base):
     """return uppercase alphabetic page numbers for PAGENO starting at BASE (a or A).
 Adobe defines them as A to Z, then AA to ZZ, and so on.
 Yes, that is somewhat wacky."""
-    (div, mod) = divmod( pageno-1, 26)
+    (div, mod) = divmod(pageno-1, 26)
     c = chr(mod + ord(base))
     return c * (div+1)
 
 # next text is from Paul M. Winkler
 # via https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s24.html
+
+
 def int_to_roman(input):
     """ Convert an integer to a Roman numeral. """
 
@@ -240,14 +248,14 @@ def int_to_roman(input):
     if not 0 < input < 4000:
         raise ValueError("Argument must be between 1 and 3999")
     ints = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
-    nums = ('M',  'CM', 'D', 'CD','C', 'XC','L','XL','X','IX','V','IV','I')
+    nums = ('M',  'CM', 'D', 'CD', 'C', 'XC',
+            'L', 'XL', 'X', 'IX', 'V', 'IV', 'I')
     result = []
     for i in range(len(ints)):
         count = int(input / ints[i])
         result.append(nums[i] * count)
         input -= ints[i] * count
     return ''.join(result)
-
 
 
 #
@@ -261,21 +269,22 @@ def int_to_roman(input):
 #
 def pdf_page_enumeration(pdf):
     """Generate a list of pages, using /PageLabels (if it exists).  Returns a list of labels."""
-    
+
     try:
         pagelabels = pdf.trailer["/Root"]["/PageLabels"]
     except:
         # ("No /Root/PageLabels object"), so infer the list.
         return range(1, pdf.getNumPages() + 1)
-    
+
     # """Select the item that is most likely to contain the information you desire; e.g.
     #        {'/Nums': [0, IndirectObject(42, 0)]}
     #    here, we only have "/Num". """
-    
+
     try:
         pagelabels_nums = pdf.trailer["/Root"]["/PageLabels"]["/Nums"]
     except:
-        raise CommandError("Malformed PDF, /Root/PageLabels but no .../Nums object")
+        raise CommandError(
+            "Malformed PDF, /Root/PageLabels but no .../Nums object")
 
     #
     # At this point we have either the object or the list.
@@ -311,7 +320,8 @@ def pdf_page_enumeration(pdf):
         elif style == '/r':
             pageno_str = int_to_roman(next_pageno).lower()
         else:
-            raise CommandError("Malformded PDF: unkown page numbering style " + style)
+            raise CommandError(
+                "Malformded PDF: unkown page numbering style " + style)
         labels.append(prefix + pageno_str)
         next_pageno += 1
 
@@ -338,3 +348,12 @@ def list_logical_pages(args):
 
     except Exception as e:
         raise CommandError(e)
+
+
+def version():
+    '''
+    Prints out the current version of the staple module
+    '''
+    ver = str(subprocess.run(['poetry', 'version'],
+              capture_output=True, check=True))
+    print(ver)
