@@ -74,6 +74,8 @@ argparser.add_argument('-d', '--destdir',
 argparser.add_argument('mode',
                        action='store',
                        help="requested stapler mode")
+argparser.add_argument('-V', '--version', action='version',
+                       help="outputs the current version")
 
 
 def main(arguments=None):
@@ -105,6 +107,7 @@ def main(arguments=None):
         "background": commands.background,
         "list-log": commands.list_logical_pages,
         "list-logical": commands.list_logical_pages,
+        "version": commands.version
     }
 
     mode = staplelib.OPTIONS.mode
