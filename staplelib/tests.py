@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from PyPDF2.pdf import PdfFileReader
+from PyPDF2.pdf import PdfReader
 
 from staplelib import main, CommandError
 
@@ -38,40 +38,40 @@ class TestStapler(unittest.TestCase):
                      self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 6)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 6)
 
     def test_sel_one_page(self):
         """Test select of a one page from a PDF file."""
         run_stapler(['sel', 'A=' + FIVEPAGE_PDF, 'A2', self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 1)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 1)
 
     def test_sel_range(self):
         """Test select of more pages from a PDF file."""
         run_stapler(['cat', 'A=' + FIVEPAGE_PDF, 'A2-4', self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 3)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 3)
 
     def test_del_one_page(self):
         """Test del command for inverse select of one page."""
         run_stapler(['del', 'A=' + FIVEPAGE_PDF, 'A1', self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 4)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 4)
 
     def test_del_range(self):
         """Test del command for inverse select multiple pages."""
         run_stapler(['del', 'A=' + FIVEPAGE_PDF, 'A2-4', self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 2)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 2)
 
     def test_split(self):
         """Make sure a file is properly split into pages."""
@@ -81,24 +81,24 @@ class TestStapler(unittest.TestCase):
         self.assertEqual(len(filelist), 5)
         for f in os.listdir(self.tmpdir):
             with open(os.path.join(self.tmpdir, f), 'rb') as pdf_file:
-                pdf = PdfFileReader(pdf_file)
-                self.assertEqual(pdf.getNumPages(), 1)
+                pdf = PdfReader(pdf_file)
+                self.assertEqual(len(pdf.pages), 1)
 
     def test_background(self):
         """Test background."""
         run_stapler(['background', ONEPAGE_PDF, FIVEPAGE_PDF, self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 5)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 5)
 
     def test_zip(self):
         """Test zip."""
         run_stapler(['zip', ONEPAGE_PDF, FIVEPAGE_PDF, self.outputfile])
         self.assertTrue(os.path.isfile(self.outputfile))
         with open(self.outputfile, 'rb') as outputfile:
-            pdf = PdfFileReader(outputfile)
-            self.assertEqual(pdf.getNumPages(), 6)
+            pdf = PdfReader(outputfile)
+            self.assertEqual(len(pdf.pages), 6)
 
     def test_output_file_already_exists(self):
         """Test zip."""
