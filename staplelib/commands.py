@@ -4,9 +4,9 @@ import math
 import os
 
 try:
-    from PyPDF2 import PdfFileWriter, PdfFileReader
+    from PyPDF2 import PdfWriter, PdfReader
 except:
-    from pyPdf import PdfFileWriter, PdfFileReader
+    from pyPdf import PdfWriter, PdfReader
 
 from . import CommandError, iohelper
 import staplelib
@@ -33,7 +33,7 @@ def select(args, inverse=False):
     if not filesandranges or not outputfilename:
         raise CommandError("Both input and output filenames are required.")
 
-    output = PdfFileWriter()
+    output = PdfWriter()
     try:
         for input in filesandranges:
             pdf = input['pdf']
@@ -44,21 +44,21 @@ def select(args, inverse=False):
             if not inverse:
                 pagerange = input['pages'] or [
                     (p, iohelper.ROTATION_NONE) for p in
-                    range(1, pdf.getNumPages() + 1)]
+                    range(1, len(pdf.pages) + 1)]
             else:
                 excluded = [p for p, r in input['pages']]
                 pagerange = [(p, iohelper.ROTATION_NONE) for p in
-                             range(1, pdf.getNumPages() + 1) if
+                             range(1, len(pdf.pages) + 1) if
                              p not in excluded]
 
             for pageno, rotate in pagerange:
-                if 1 <= pageno <= pdf.getNumPages():
+                if 1 <= pageno <= len(pdf.pages):
                     if verbose:
                         print("Using page: {} (rotation: {} deg.)".format(
                             pageno, rotate))
 
-                    output.addPage(pdf.getPage(pageno-1)
-                                   .rotateClockwise(rotate))
+                    output.add_page(pdf.pages[pageno-1]
+                                   .rotate(rotate))
                 else:
                     raise CommandError("Page {} not found in {}.".format(
                         pageno, input['name']))
@@ -98,14 +98,14 @@ def split(args):
             base,
             '_',
             '%0',
-            str(math.ceil(math.log10(input.getNumPages()))),
+            str(math.ceil(math.log10(len(input.pages)))),
             'd',
             ext
         ])
 
-        for pageno in range(input.getNumPages()):
-            output = PdfFileWriter()
-            output.addPage(input.getPage(pageno))
+        for pageno in range(len(input.pages)):
+            output = PdfWriter()
+            output.add_page(input.pages[pageno])
 
             outputname = output_template % (pageno + 1)
             if verbose:
@@ -150,17 +150,17 @@ def zip_pdf_pages(filesandranges, verbose):
         # empty range means "include all pages"
         pagerange = input['pages'] or [
             (p, iohelper.ROTATION_NONE) for p in
-            range(1, pdf.getNumPages() + 1)]
+            range(1, len(pdf.pages) + 1)]
 
         pagestozip = []
         for pageno, rotate in pagerange:
-            if 1 <= pageno <= pdf.getNumPages():
+            if 1 <= pageno <= len(pdf.pages):
                 if verbose:
                     print("Using page: {} (rotation: {} deg.)".format(
                         pageno, rotate))
 
-                pagestozip.append(pdf.getPage(pageno-1)
-                               .rotateClockwise(rotate))
+                pagestozip.append(pdf.pages[pageno-1]
+                               .rotate(rotate))
             else:
                 raise CommandError("Page {} not found in {}.".format(
                     pageno, input['name']))
@@ -181,7 +181,7 @@ def background(args):
     try:
         filestozip = zip_pdf_pages(filesandranges, verbose)
 
-        output = PdfFileWriter()
+        output = PdfWriter()
         for pageno in range(max(map(len, filestozip))):
             page = None
             for listno in range(len(filestozip)):
@@ -190,8 +190,8 @@ def background(args):
                     if not page:
                         page = p
                     else:
-                        page.mergePage(p)
-            output.addPage(page)
+                        page.merge_page(p)
+            output.add_page(page)
 
     except Exception as e:
         import sys
@@ -213,11 +213,11 @@ def zip(args):
     filestozip = zip_pdf_pages(filesandranges, verbose)
 
     # Interweave pages.
-    output = PdfFileWriter()
+    output = PdfWriter()
     for pageno in range(max(map(len, filestozip))):
         for listno in range(len(filestozip)):
             if pageno < len(filestozip[listno]):
-                output.addPage(filestozip[listno][pageno])
+                output.add_page(filestozip[listno][pageno])
 
     _write_output(output, outputfilename)
 
@@ -266,7 +266,7 @@ def pdf_page_enumeration(pdf):
         pagelabels = pdf.trailer["/Root"]["/PageLabels"]
     except:
         # ("No /Root/PageLabels object"), so infer the list.
-        return range(1, pdf.getNumPages() + 1)
+        return range(1, len(pdf.pages) + 1)
     
     # """Select the item that is most likely to contain the information you desire; e.g.
     #        {'/Nums': [0, IndirectObject(42, 0)]}
@@ -292,7 +292,7 @@ def pdf_page_enumeration(pdf):
     style = '/D'
     prefix = ''
     next_pageno = 1
-    for i in range(0, pdf.getNumPages()):
+    for i in range(0, len(pdf.pages)):
         if len(pagelabels_nums_list) > 0 and i >= pagelabels_nums_list[0]:
             pagelabels_nums_list.pop(0)  # discard index
             pnle = pagelabels_nums_list.pop(0)
