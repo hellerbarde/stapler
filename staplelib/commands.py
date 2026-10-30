@@ -296,7 +296,8 @@ def pdf_page_enumeration(pdf):
         if len(pagelabels_nums_list) > 0 and i >= pagelabels_nums_list[0]:
             pagelabels_nums_list.pop(0)  # discard index
             pnle = pagelabels_nums_list.pop(0)
-            style = pnle.get('/S', '/D')
+            # An omitted /S means the label consists only of its prefix.
+            style = pnle.get('/S')
             prefix = pnle.get('/P', '')
             next_pageno = pnle.get('/St', 1)
         pageno_str = ''
@@ -310,7 +311,7 @@ def pdf_page_enumeration(pdf):
             pageno_str = int_to_roman(next_pageno)
         elif style == '/r':
             pageno_str = int_to_roman(next_pageno).lower()
-        else:
+        elif style is not None:
             raise CommandError("Malformded PDF: unkown page numbering style " + style)
         labels.append(prefix + pageno_str)
         next_pageno += 1
